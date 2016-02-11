@@ -4,7 +4,7 @@ var exec = require('child_process').exec;
 
 switch (process.platform) {
 case 'win32':
-    exec("npm install -g node-windows & npm link node-windows & node ./windows-service/app.js", function (error) {
+    exec("npm install -g node-windows & npm link node-windows & node ./install/windows-service/app.js", function (error) {
         if (error) {
             console.error(error);
             process.exit(-1);
