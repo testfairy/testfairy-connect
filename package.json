@@ -1,0 +1,29 @@
+{
+    "name": "testfairy-connect",
+    "author": "TestFairy <dev@testfairy.com> (http://www.testfairy.com/)",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "start": "node ./service.js",
+        "postinstall": "node install/postinstall.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/testfairy/testfairy-connect.git"
+    },
+    "dependencies": {
+        "extend": "^3.0.0",
+        "superagent": "visionmedia/superagent"
+    },
+    "devDependencies": {
+    }
+}
+
+
+
+
+
+
+
+
+

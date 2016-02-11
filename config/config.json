@@ -1,0 +1,17 @@
+{
+    "testfairy": {
+        "timeout": 5000,
+        "secretKey": "averysecretkey",
+        "URL": "http://localhost:3000/connect-rpc-request"
+    },
+    "issueTracker": {
+        "type": "tfs",
+        "URL": "http://tile7:8080/tfs/DefaultCollection",
+        "projects": ["teamproject"],
+        "fieldMapping": {
+            "status": "State",
+            "summary": "Title",
+            "description": "Repro Steps"
+        }
+    }
+}
