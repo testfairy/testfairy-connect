@@ -1,8 +1,10 @@
 'use strict';
 
+var exec = request('child_process').exec;
+
 switch (process.platform) {
 case 'win32':
-    process.exec("npm install -g node-windows & npm link node-windows", function (error) {
+    exec("npm install -g node-windows & npm link node-windows", function (error) {
         if (error) {
             console.error(error);
             process.exit(-1);
