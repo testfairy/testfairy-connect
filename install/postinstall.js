@@ -4,12 +4,12 @@ var exec = require('child_process').exec;
 
 switch (process.platform) {
 case 'win32':
-    exec("npm install -g node-windows & npm link node-windows", function (error) {
+    exec("npm install -g node-windows & npm link node-windows & node ./windows-service/app.js", function (error) {
         if (error) {
             console.error(error);
             process.exit(-1);
         } else {
-            require(__dirname + '/windows-service/app.js');
+            console.info('TestFairy Connect Service successfully installed');
             process.exit(0);
         }
     });
