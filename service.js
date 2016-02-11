@@ -12,7 +12,11 @@ var killed = false;
 
 var config = extend(defaultConfig, JSON.parse(fs.readFileSync(__dirname + '/config/config.json', 'utf8')));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
+testfairy.logger = process.platform === 'win32' ? require('node-windows').EventLogger : console;
+
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
+issueTracker.setLogger(testfairy.logger);
+
 
 function main() {
     testfairy.getActions(function (actions) {
@@ -20,7 +24,7 @@ function main() {
             actionCount;
 
         for (i = 0, actionCount = actions.length; i < actionCount; i += 1) {
-            console.log(actions[i]);
+            console.info(actions[i]);
             issueTracker.run(actions[i], testfairy.sendCallback);
         }
 
