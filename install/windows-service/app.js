@@ -1,6 +1,6 @@
 'use strict';
 
-var Service = require('node-windows-service').Service;
+var Service = require('node-windows').Service;
 
 // Create a new service object
 var svc = new Service({
