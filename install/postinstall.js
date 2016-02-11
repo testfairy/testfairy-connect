@@ -1,6 +1,6 @@
 'use strict';
 
-var exec = request('child_process').exec;
+var exec = require('child_process').exec;
 
 switch (process.platform) {
 case 'win32':
