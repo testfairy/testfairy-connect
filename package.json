@@ -5,7 +5,7 @@
     "private": true,
     "scripts": {
         "start": "node ./service.js",
-        "postinstall": "node install/postinstall.js"
+        "postinstall": "install/postinstall.js"
     },
     "repository": {
         "type": "git",
