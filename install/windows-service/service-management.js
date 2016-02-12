@@ -9,7 +9,8 @@ var svc = new Service({
     description: 'Integrates TestFairy with TFS WorkItem Collection.',
     script: jsPath,
     env: {
-        'WINDOWS_SERVICE': true
+        name: 'WINDOWS_SERVICE',
+        value: true
     }
 });
 
