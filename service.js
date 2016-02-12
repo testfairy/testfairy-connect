@@ -12,7 +12,12 @@ var killed = false;
 
 var config = extend(defaultConfig, JSON.parse(fs.readFileSync(__dirname + '/config/config.json', 'utf8')));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
-testfairy.logger = process.platform === 'win32' ? new (require('node-windows').EventLogger)('TestFairy Connect') : console;
+
+testfairy.logger = console;
+if (process.platform === 'win32' && process.env.WINDOWS_SERVICE) {
+    var windowsEventLogger = new (require('node-windows').EventLogger)('TestFairy Connect');
+    testfairy.logger = require('./install/windows-service/event-logger.js')(windowsEventLogger);
+}
 
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
 issueTracker.setLogger(testfairy.logger);

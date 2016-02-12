@@ -7,7 +7,10 @@ var jsPath = process.cwd() + '\\service.js';
 var svc = new Service({
     name: 'TestFairy Connect',
     description: 'Integrates TestFairy with TFS WorkItem Collection.',
-    script: jsPath
+    script: jsPath,
+    env: {
+        'WINDOWS_SERVICE': true
+    }
 });
 
 svc.on('install', function () {
