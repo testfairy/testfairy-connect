@@ -8,13 +8,13 @@
  */
 var logger = function (wrapped) {
     var info = function () {
-            wrapped.info(JSON.stringify(arguments));
+            wrapped.info(JSON.stringify(arguments).replace(/"/g, '\\"'));
         },
         error = function () {
-            wrapped.error(JSON.stringify(arguments));
+            wrapped.error(JSON.stringify(arguments).replace(/"/g, '\\"'));
         },
         warn = function () {
-            wrapped.warn(JSON.stringify(arguments));
+            wrapped.warn(JSON.stringify(arguments).replace(/"/g, '\\"'));
         };
     return {
         'log': info,
