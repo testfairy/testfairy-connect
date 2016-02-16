@@ -8,13 +8,13 @@
  */
 var logger = function (wrapped) {
     var info = function () {
-            wrapped.info(JSON.stringify(arguments).replace(/"/g, '\\"'));
+            wrapped.info(JSON.stringify(arguments).replace(/"/g, '\\"').replace(/(?:\\[rnt])+/g, ' '));
         },
         error = function () {
-            wrapped.error(JSON.stringify(arguments).replace(/"/g, '\\"'));
+            wrapped.error(JSON.stringify(arguments).replace(/"/g, '\\"').replace(/(?:\\[rnt])+/g, ' '));
         },
         warn = function () {
-            wrapped.warn(JSON.stringify(arguments).replace(/"/g, '\\"'));
+            wrapped.warn(JSON.stringify(arguments).replace(/"/g, '\\"').replace(/(?:\\[rnt])+/g, ' '));
         };
     return {
         'log': info,
