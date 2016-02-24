@@ -1,12 +1,12 @@
 {
     "testfairy": {
         "timeout": 5000,
-        "apiKey": "5fc12b8f17ac4fada6f31d72b59e55caeda9386e",
-        "URL": "http://tishma.eu.dev.testfairy.net/connect"
+        "apiKey": "my testfairy api key",
+        "URL": "https://app.testfairy.net/connect"
     },
     "issueTracker": {
         "type": "tfs",
-        "URL": "http://tile7:8080/tfs/DefaultCollection",
+        "URL": "http://myintranettfsserver:8080/tfs/DefaultCollection",
         "projects": ["teamproject"],
         "fieldMapping": {
             "status": "State",
