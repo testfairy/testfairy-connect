@@ -17,6 +17,8 @@ testfairy.logger = console;
 if (process.platform === 'win32' && process.env.WINDOWS_SERVICE) {
     var windowsEventLogger = new (require('node-windows').EventLogger)('TestFairy Connect');
     testfairy.logger = require('./install/windows-service/event-logger.js')(windowsEventLogger);
+} else {
+    require('console-stamp')(console, '[HH:MM:ss.l]');
 }
 
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
