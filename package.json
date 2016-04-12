@@ -14,7 +14,8 @@
   "dependencies": {
     "console-stamp": "^0.2.0",
     "extend": "^3.0.0",
-    "superagent": "visionmedia/superagent"
+    "superagent": "visionmedia/superagent",
+    "jira": "steves/node-jira"
   },
   "devDependencies": {}
 }

@@ -2,6 +2,8 @@
 
 var fs = require('fs');
 var extend = require('extend');
+var EventEmitter = require('events').EventEmitter;
+var eventEmitter = new EventEmitter();
 
 var defaultConfig = {
     'testfairy': {
@@ -23,7 +25,7 @@ if (process.platform === 'win32' && process.env.WINDOWS_SERVICE) {
 
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
 issueTracker.setLogger(testfairy.logger);
-
+issueTracker.setEventEmitter(eventEmitter);
 
 function main() {
     testfairy.getActions(function (actions) {
@@ -41,4 +43,7 @@ function main() {
     });
 }
 
-main();
+eventEmitter.on('trackerInitialized', main);
+
+issueTracker.initialize();
+

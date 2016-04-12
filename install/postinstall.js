@@ -18,6 +18,6 @@ case 'win32':
     });
     break;
 default:
-    console.warn('Platform not supported: ' + process.platform + '. Please run TestFairy Connect manually.');
+    console.warn('Platform not supported: ' + process.platform + '. No worries! You can still run TestFairy Connect manually.');
     process.exit(0);
 }
