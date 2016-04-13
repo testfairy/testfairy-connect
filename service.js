@@ -5,8 +5,6 @@ var extend = require('extend');
 var EventEmitter = require('events').EventEmitter;
 var eventEmitter = new EventEmitter();
 
-console.log(eventEmitter);
-
 var defaultConfig = {
     'testfairy': {
         'timeout': 5000
@@ -26,10 +24,6 @@ if (process.platform === 'win32' && process.env.WINDOWS_SERVICE) {
 }
 
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
-
-console.log('logging issuetracker');
-console.log(issueTracker);
-
 issueTracker.setLogger(testfairy.logger);
 issueTracker.setEventEmitter(eventEmitter);
 
@@ -50,6 +44,5 @@ function main() {
 }
 
 eventEmitter.on('trackerInitialized', main);
-
 issueTracker.initialize();
 
