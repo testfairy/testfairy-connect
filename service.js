@@ -5,6 +5,8 @@ var extend = require('extend');
 var EventEmitter = require('events').EventEmitter;
 var eventEmitter = new EventEmitter();
 
+console.log(eventEmitter);
+
 var defaultConfig = {
     'testfairy': {
         'timeout': 5000
