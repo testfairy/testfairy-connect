@@ -26,6 +26,9 @@ if (process.platform === 'win32' && process.env.WINDOWS_SERVICE) {
 }
 
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
+
+console.log(issueTracker);
+
 issueTracker.setLogger(testfairy.logger);
 issueTracker.setEventEmitter(eventEmitter);
 
