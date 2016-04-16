@@ -1,6 +1,6 @@
 'use strict';
 
-var fs = require('fs');
+var fs = require('fs-extra');
 var extend = require('extend');
 var EventEmitter = require('events').EventEmitter;
 var eventEmitter = new EventEmitter();
@@ -12,7 +12,18 @@ var defaultConfig = {
 };
 var killed = false;
 
-var config = extend(defaultConfig, JSON.parse(fs.readFileSync(__dirname + '/config/config.json', 'utf8')));
+if (!fs.existsSync(process.env.HOME + '/.testfairy-connect')) {
+    fs.mkdirSync(process.env.HOME + '/.testfairy-connect', 511);
+    fs.copySync(__dirname + '/config/jira-example.config.json', process.env.HOME + '/.testfairy-connect/jira-example.config.json');
+    fs.copySync(__dirname + '/config/tfs-example.config.json', process.env.HOME + '/.testfairy-connect/tfs-example.config.json');
+}
+
+if (!fs.existsSync(process.env.HOME + '/.testfairy-connect/config.json')) {
+    console.error('Config file ($HOME/.testfairy-connect/config.json) does not exist. Plese check examples in your $HOME/.testfairy-connect.');
+    process.exit(1);
+}
+
+var config = extend(defaultConfig, JSON.parse(fs.readFileSync(process.env.HOME + '/.testfairy-connect/config.json'), 'utf8'));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
 
 testfairy.logger = console;

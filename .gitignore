@@ -22,6 +22,7 @@ coverage
 .grunt
 
 # node-waf configuration
+/config/config.json
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
