@@ -12,18 +12,20 @@ var defaultConfig = {
 };
 var killed = false;
 
-if (!fs.existsSync(process.env.HOME + '/.testfairy-connect')) {
-    fs.mkdirSync(process.env.HOME + '/.testfairy-connect', 511);
-    fs.copySync(__dirname + '/config/jira-example.config.json', process.env.HOME + '/.testfairy-connect/jira-example.config.json');
-    fs.copySync(__dirname + '/config/tfs-example.config.json', process.env.HOME + '/.testfairy-connect/tfs-example.config.json');
+var userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH;
+
+if (!fs.existsSync(userHome + '/.testfairy-connect')) {
+    fs.mkdirSync(userHome + '/.testfairy-connect', 511);
+    fs.copySync(__dirname + '/config/jira-example.config.json', userHome + '/.testfairy-connect/jira-example.config.json');
+    fs.copySync(__dirname + '/config/tfs-example.config.json', userHome + '/.testfairy-connect/tfs-example.config.json');
 }
 
-if (!fs.existsSync(process.env.HOME + '/.testfairy-connect/config.json')) {
+if (!fs.existsSync(userHome + '/.testfairy-connect/config.json')) {
     console.error('Config file ($HOME/.testfairy-connect/config.json) does not exist. Plese check examples in your $HOME/.testfairy-connect.');
     process.exit(1);
 }
 
-var config = extend(defaultConfig, JSON.parse(fs.readFileSync(process.env.HOME + '/.testfairy-connect/config.json'), 'utf8'));
+var config = extend(defaultConfig, JSON.parse(fs.readFileSync(userHome + '/.testfairy-connect/config.json'), 'utf8'));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
 
 testfairy.logger = console;
