@@ -21,7 +21,7 @@ if (!fs.existsSync(userHome + '/.testfairy-connect')) {
 }
 
 if (!fs.existsSync(userHome + '/.testfairy-connect/config.json')) {
-    console.error('Config file ($HOME/.testfairy-connect/config.json) does not exist. Plese check examples in your $HOME/.testfairy-connect.');
+    console.error('Config file (' + userHome + '/.testfairy-connect/config.json) does not exist. Plese check examples in your ' + userHome + '/.testfairy-connect.');
     process.exit(1);
 }
 
