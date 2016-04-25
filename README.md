@@ -89,6 +89,7 @@ Please note that `issueTracker.URL` setting  should have proper schema (https or
 
 ### Team Foundation Server (TFS)
 
+#### Additional Requirements
 * The machine running TFC Agent must have [Microsoft Visual Studio Team Foundation Server 2015 Power Tools](https://visualstudiogallery.msdn.microsoft.com/898a828a-af00-42c6-bbb2-530dc7b8f2e1)
 installed.
 
