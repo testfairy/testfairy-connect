@@ -5,34 +5,44 @@
 TestFairy Connect is designed to help developers integrate their bug tracking systems running behind firewall with their 
 TestFairy account.
 
-The key part of TestFairy Connect is the agent service (TFC Agent) that runs on a system also behind firewall, connecting to both 
+The key part of TestFairy Connect is the agent service (TFC Agent) that runs on a system also behind firewall, connecting both 
 TestFairy's web app and bug tracking system.
 
 
-## Agent
+## Installation Requirements
 
-### Installation Requirements
-
-* Nodejs (verified with 4.2)
-* npm (verified with 2.14)
-* git (verified with 1.7 and 2.5)
+* Nodejs 4.2+
+* npm 2.14+
+* git 1.7+ or 2.5+
 * For TFS integration, please see [additional requirements](#additional-requirements) too
 
-### Installation
+## Installation
+    mkdir testfairyconnect
+    cd testfairyconnect #this is the installation dir - where you run the TFC Agent from
+    mkdir node_modules
     npm install https://github.com/testfairy/testfairy-connect
-    
-    
-### Configuration
+ 
+## Running TFC Agent
+### Manually
+From the installation dir run:
 
-Configuration file `config.json` is located in `.testfairyconnect` under running user's home directory. Usually:
+    node node_modules/testfairy-connect/service.js
+    
+### As a Windows Service
+Upon installation, you'll find ```TestFairy Connect``` under Windows Services. Upon successful [configuration](#configuration),
+you can try starting the service from the Services console.
+    
+## Configuration
+
+Configuration file `config.json` is located in `.testfairyconnect` under running user's home directory. 
 
 In linux
 
-    /home/testfairyconnectuser/.testfairyconnect/config.json
+    ~/.testfairyconnect/config.json
     
 In Windows
 
-    C:\Users\testfairyconnectuser\.testfairyconnect\config.json
+    C:\Users\MyUser\.testfairyconnect\config.json
 
 
 You'll need the following data:
@@ -43,7 +53,7 @@ Might contain your organization subdomain instead of 'app'.
 * Url to you bug system.
 * Valid credentials for a bug system user.
 * List of projects to expose via TFC Agent.
- 
+
 ## Supported issue trackers specific stuff
 
 ### JIRA
@@ -78,7 +88,6 @@ Please note that `issueTracker.URL` setting  should have proper schema (https or
    
 
 ### Team Foundation Server (TFS)
-#### Additional requirements
 
 * The machine running TFC Agent must have [Microsoft Visual Studio Team Foundation Server 2015 Power Tools](https://visualstudiogallery.msdn.microsoft.com/898a828a-af00-42c6-bbb2-530dc7b8f2e1)
 installed.
