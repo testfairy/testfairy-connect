@@ -16,7 +16,7 @@ TestFairy's web app and bug tracking system.
 * Nodejs (verified with 4.2)
 * npm (verified with 2.14)
 * git (verified with 1.7 and 2.5)
-* For TFS integration, please see [additional requirements](####Additionalrequirements) too
+* For TFS integration, please see [additional requirements](#additional-requirements) too
 
 ### Installation
     npm install https://github.com/testfairy/testfairy-connect
