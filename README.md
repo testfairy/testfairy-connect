@@ -48,6 +48,35 @@ Might contain your organization subdomain instead of 'app'.
 
 ### JIRA
 
+Example ```config.json```:
+   
+    {
+        "testfairy": {
+            "timeout": 5000,
+            "apiKey": "[as found under Upload API Key @ https://www.testfairy.com/settings]",
+            "URL": "https://app.testfairy.com/connect"
+        },
+        "issueTracker": {
+            "type": "jira",
+            "issueType": "Bug",
+            "URL": "http://localhost:2990/jira",
+            "username": "admin",
+            "password": "admin",
+            "strictSSL": false,
+            "oauth": false,
+            "projects": ["PROJECT1", "PROJECT2"],
+            "fieldMapping": {
+                "status": "status",
+                "summary": "summary",
+                "description": "description"
+            }
+        }
+    }
+
+
+Please note that `issueTracker.URL` setting  should have proper schema (https or http), port (if not default), and path to JIRA application included.
+   
+
 ### Team Foundation Server (TFS)
 #### Additional requirements
 
@@ -58,6 +87,25 @@ installed.
 It might be a good idea to create a windows user called e.g. testfairyconnect, 
 with permissions to both run the agent and create issues in TFS.
 
-Example config.json can be found [here](config/tfs-example.config.json). Please note that `issueTracker.URL` setting
-  should link to team project collection.
+Example config.json:
+
+    {
+        "testfairy": {
+            "timeout": 5000,
+            "apiKey": "[as found under Upload API Key @ https://www.testfairy.com/settings]",
+            "URL": "https://app.testfairy.com/connect"
+        },
+        "issueTracker": {
+            "type": "tfs",
+            "URL": "http://localhost:8080/tfs/DefaultCollection",
+            "projects": ["Project1", "Project2"],
+            "fieldMapping": {
+                "status": "State",
+                "summary": "Title",
+                "description": "Repro Steps"
+            }
+        }
+    }
+
+Please note that `issueTracker.URL` setting should link to team project collection that the projects belong to.
 
