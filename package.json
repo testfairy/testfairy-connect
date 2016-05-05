@@ -4,8 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./service.js",
-    "postinstall": "node ./install/postinstall.js"
+    "start": "node ./service.js"
   },
   "repository": {
     "type": "git",
