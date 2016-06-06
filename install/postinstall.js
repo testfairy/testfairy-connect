@@ -18,6 +18,5 @@ case 'win32':
     });
     break;
 default:
-    console.warn('Couldn\'t configure service on platform: ' + process.platform + '. No worries! You can still run TestFairy Connect manually.');
     process.exit(0);
 }
