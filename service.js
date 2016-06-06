@@ -61,6 +61,9 @@ function main() {
     });
 }
 
-eventEmitter.on('trackerInitialized', main);
+eventEmitter.on('trackerInitialized', function () {
+    testfairy.logger.log("TestFairy Connect is ready");
+    main();
+});
 issueTracker.initialize();
 
