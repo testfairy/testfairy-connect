@@ -1,6 +1,6 @@
 {
     "testfairy": {
-        "timeout": 5000,
+        "timeout": 1000,
         "apiKey": "[as found under Upload API Key @ https://www.testfairy.com/settings]",
         "URL": "https://app.testfairy.com/connect"
     },
