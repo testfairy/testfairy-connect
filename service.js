@@ -1,5 +1,10 @@
 'use strict';
 
+// kill process on ctrl-c
+process.on('SIGINT', function() {
+    process.exit();
+});
+
 var fs = require('fs-extra');
 var extend = require('extend');
 var EventEmitter = require('events').EventEmitter;
@@ -10,6 +15,7 @@ var defaultConfig = {
         'timeout': 5000
     }
 };
+
 var killed = false;
 
 var userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH;
