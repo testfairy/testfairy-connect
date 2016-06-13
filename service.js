@@ -71,5 +71,7 @@ eventEmitter.on('trackerInitialized', function () {
     testfairy.logger.log("TestFairy Connect is ready");
     main();
 });
+
+testfairy.logger.log("Initializing TestFairy Connect..");
 issueTracker.initialize();
 
