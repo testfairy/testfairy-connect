@@ -6,7 +6,7 @@ node_js:
 script:
   - # do nothing
 
-after_script:
+before_deploy:
   - zip -r9p a.zip . --exclude *.git* --exclude .travis.yml*
 
 deploy:
