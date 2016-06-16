@@ -7,7 +7,7 @@ script:
   - # do nothing
 
 before_deploy:
-  - zip -r9p a.zip . --exclude *.git* --exclude .travis.yml*
+  - zip -r9p testfairy-connect.zip . --exclude *.git* --exclude .travis.yml*
 
 deploy:
   provider: releases
