@@ -1,0 +1,11 @@
+language: node_js
+
+node_js:
+  - "6.1"
+
+script:
+  - # do nothing
+
+after_script:
+  - zip -r9p a.zip . --exclude *.git* --exclude .travis.yml*
+
