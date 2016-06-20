@@ -10,8 +10,13 @@
         "URL": "http://localhost:2990/jira",
         "username": "admin",
         "password": "admin",
+        "oauth": {
+            "consumer_key": "testfairy-connect",
+            "consumer_secret": "~/.ssh/jira_rsa",
+            "token": "10ESKOx2cXyGRrZj08CZDXgrE6G3IqJd",
+            "token_secret": "2UBqjabImuJSd9CW0w9FwimzDmO2JgWc"
+        },
         "strictSSL": false,
-        "oauth": false,
         "projects": ["PROJECT1", "PROJECT2"],
         "fieldMapping": {
             "status": "status",
