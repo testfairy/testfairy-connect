@@ -12,7 +12,7 @@
         "password": "admin",
         "oauth": {
             "consumer_key": "testfairy-connect",
-            "consumer_secret": "~/.ssh/jira_rsa",
+            "private_key_path": "~/.ssh/jira_rsa",
             "token": "10ESKOx2cXyGRrZj08CZDXgrE6G3IqJd",
             "token_secret": "2UBqjabImuJSd9CW0w9FwimzDmO2JgWc"
         },
