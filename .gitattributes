@@ -1,1 +1,2 @@
 config/tfs-example.config.json -crlf
+lib/issue-tracker/types/tfs.js -crlf
