@@ -1,0 +1,22 @@
+{
+    "testfairy": {
+        "timeout": 1000,
+        "apiKey": "[as found under Upload API Key @ https://www.testfairy.com/settings]",
+        "URL": "https://app.testfairy.com/connect"
+    },
+    "issueTracker": {
+        "type": "jira",
+        "issueType": "Bug",
+        "URL": "http://localhost:2990/jira",
+        "username": "admin",
+        "password": "admin",
+        "oauth": false,
+        "strictSSL": false,
+        "projects": ["PROJECT1", "PROJECT2"],
+        "fieldMapping": {
+            "status": "status",
+            "summary": "summary",
+            "description": "description"
+        }
+    }
+}
