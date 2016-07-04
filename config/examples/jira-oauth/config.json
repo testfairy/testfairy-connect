@@ -8,8 +8,6 @@
         "type": "jira",
         "issueType": "Bug",
         "URL": "http://localhost:2990/jira",
-        "username": "admin",
-        "password": "admin",
         "oauth": {
             "consumer_key": "testfairy-connect",
             "private_key_path": "~/.ssh/jira_rsa",
