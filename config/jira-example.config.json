@@ -13,8 +13,8 @@
         "oauth": {
             "consumer_key": "testfairy-connect",
             "private_key_path": "~/.ssh/jira_rsa",
-            "token": "10ESKOx2cXyGRrZj08CZDXgrE6G3IqJd",
-            "token_secret": "2UBqjabImuJSd9CW0w9FwimzDmO2JgWc"
+            "token": "00000000000000000000000000000000",
+            "token_secret": "00000000000000000000000000000000"
         },
         "strictSSL": false,
         "projects": ["PROJECT1", "PROJECT2"],
