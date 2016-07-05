@@ -52,7 +52,7 @@ function buildTFSConfig(answers) {
             "description": "Repro Steps"
         };
     }
-    if (answers.workitemType === 'User Story') {
+    if (answers.workitemType === 'Task' || answers.workitemType === 'User Story') {
         tfsConfig.fieldMapping = {
             "status": "State",
             "summary": "Title",
@@ -159,7 +159,7 @@ var questions = [
         type: 'list',
         name: 'workitemType',
         message: 'What\'s type of TFS workitems to be created using TestFairy Connect?',
-        choices: ['Bug', 'User Story'],
+        choices: ['Bug', 'Task', 'User Story'],
         default: 'Bug',
         when: function (answers) {
             return answers.type === 'tfs';
