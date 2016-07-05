@@ -17,8 +17,9 @@ var userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH;
 
 if (!fs.existsSync(userHome + '/.testfairy-connect')) {
     fs.mkdirSync(userHome + '/.testfairy-connect', 511);
-    fs.copySync(__dirname + '/config/jira-example.config.json', userHome + '/.testfairy-connect/jira-example.config.json');
-    fs.copySync(__dirname + '/config/tfs-example.config.json', userHome + '/.testfairy-connect/tfs-example.config.json');
+    fs.copySync(__dirname + '/config/examples/jira-basic-auth/config.json', userHome + '/.testfairy-connect/examples/jira-basic-auth/config.json');
+    fs.copySync(__dirname + '/config/examples/jira-oauth/config.json', userHome + '/.testfairy-connect/examples/jira-oauth/config.json');
+    fs.copySync(__dirname + '/config/examples/tfs/config.json', userHome + '/.testfairy-connect/examples/jira-tfc/config.json');
 }
 
 var configFilePath = userHome + '/.testfairy-connect/config.json';
@@ -34,7 +35,7 @@ if (program.config) {
 }
 
 if (!fs.existsSync(configFilePath)) {
-    console.error('Config file (' + configFilePath + ') does not exist. Plese check examples in your ' + userHome + '/.testfairy-connect.');
+    console.error('Config file (' + configFilePath + ') does not exist. Plese check examples in your ' + userHome + '/.testfairy-connect/examples.');
     process.exit(1);
 }
 
