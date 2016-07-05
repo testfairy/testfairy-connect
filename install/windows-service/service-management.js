@@ -16,7 +16,6 @@ var svc = new Service({
 
 svc.on('install', function () {
     console.info('TestFairy Connect service successfully installed.');
-    svc.start();
 });
 
 svc.on('uninstall', function () {
