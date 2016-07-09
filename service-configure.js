@@ -30,8 +30,13 @@
             'URL': oldConfig.issueTracker.URL,
             'jiraAuthType': oldConfig.issueTracker.type === 'jira' ? (oldConfig.issueTracker.oauth ? 'oauth' : 'basic') : null,
             'issueType': oldConfig.issueTracker.issueType,
-            'workitemType': oldConfig.issueTracker.workitemType
+            'workitemType': oldConfig.issueTracker.workitemType,
+            'type': oldConfig.issueTracker.type
         };
+        if (oldConfig.issueTracker.username) {
+            defaults.username = oldConfig.issueTracker.username;
+            defaults.password = oldConfig.issueTracker.password;
+        }
     }
 
     function generateKeyPair() {
@@ -50,7 +55,7 @@
         return {
             "timeout": 1000,
             "apiKey": answers.testfairyApiKey,
-            "URL": oldConfig.testfairy.URL || "https://app.testfairy.com/connect"
+            "URL": (oldConfig && oldConfig.testfairy.URL) || "https://app.testfairy.com/connect"
         };
     }
 
@@ -64,7 +69,8 @@
             jiraConfig.username = answers.username;
             jiraConfig.password = answers.password;
         } else {
-            if (oldConfig.issueTracker.oauth) {
+            if (oldConfig && oldConfig.issueTracker.oauth) {
+                //keep old oauth config
                 jiraConfig.oauth = oldConfig.issueTracker.oauth;
             } else {
                 jiraConfig.oauth = answers.oauth_keypair;
@@ -119,15 +125,28 @@
             type: 'input',
             name: 'testfairyApiKey',
             message: 'What is your TestFairy API Key?',
-            default: defaults.testfairyApiKey || ''
+            default: defaults.testfairyApiKey
         },
         {
             type: 'list',
             name: 'type',
+            default: defaults.type,
             message: 'What kind of issue tracking system will you use with TestFairy Connect?',
-            choices: ['JIRA', 'TFS'],
-            filter: function (val) {
-                return val.toLowerCase();
+            choices: [
+                {'name': 'JIRA', 'value': 'jira'},
+                {'name': 'TFS', 'value': 'tfs'}
+            ]
+        },
+        {
+            type: 'input',
+            name: 'URL',
+            message: 'What\'s your JIRA URL (e.g. https://example.atlassian.net or http://localhost:2990/jira)?',
+            default: defaults.URL,
+            filter: function (input) {
+                return input.replace(new RegExp('[\/]+$'), '');
+            },
+            when: function (answers) {
+                return answers.type === 'jira';
             }
         },
         {
@@ -136,15 +155,6 @@
             message: 'How shall TestFairy Connect authenticate to JIRA?',
             choices: ['basic', 'oauth'],
             default: defaults.jiraAuthType || 'basic',
-            when: function (answers) {
-                return answers.type === 'jira';
-            }
-        },
-        {
-            type: 'input',
-            name: 'URL',
-            message: 'What\'s your JIRA URL (please avoid trailing slash, e.g. https://example.atlassian.net)?',
-            default: defaults.URL || '',
             when: function (answers) {
                 return answers.type === 'jira';
             }
@@ -162,6 +172,7 @@
             type: 'input',
             name: 'username',
             message: 'JIRA username:',
+            default: defaults.username,
             when: function (answers) {
                 return answers.jiraAuthType === 'basic';
             }
@@ -169,6 +180,7 @@
         {
             type: 'password',
             name: 'password',
+            default: defaults.password,
             message: 'JIRA password:',
             when: function (answers) {
                 return answers.jiraAuthType === 'basic';
@@ -200,7 +212,7 @@
             },
             when: function (answers) {
                 jiraUrl = answers.URL;
-                return answers.jiraAuthType === 'oauth' && !oldConfig.issueTracker.oauth;
+                return answers.jiraAuthType === 'oauth' && !(oldConfig && oldConfig.issueTracker.oauth);
             }
         },
         {
@@ -244,7 +256,7 @@
             },
             when: function (answers) {
                 jiraUrl = answers.URL;
-                return answers.jiraAuthType === 'oauth' && !oldConfig.issueTracker.oauth;
+                return answers.jiraAuthType === 'oauth' && !(oldConfig && oldConfig.issueTracker.oauth);
             }
         },
         {
@@ -274,13 +286,17 @@
                 });
             },
             when: function (answers) {
-                return answers.jiraAuthType === 'oauth' && !oldConfig.issueTracker.oauth;
+                return answers.jiraAuthType === 'oauth' && !(oldConfig && oldConfig.issueTracker.oauth);
             }
         },
         {
             type: 'input',
             name: 'URL',
-            message: 'What\'s your TFS Collection URL (please avoid trailing slash, e.g. http://localhost:8080/tfs/DefaultCollection)?',
+            default: defaults.URL,
+            message: 'What\'s your TFS Collection URL (e.g. http://localhost:8080/tfs/DefaultCollection)?',
+            filter: function (input) {
+                return input.replace(new RegExp('[\/]+$'), '');
+            },
             when: function (answers) {
                 return answers.type === 'tfs';
             }
@@ -312,7 +328,7 @@
         }
         config.issueTracker.URL = answers.URL;
         console.info('SUCCESS!');
-        if (oldConfig.issueTracker.projects) {
+        if (oldConfig && oldConfig.issueTracker.projects) {
             config.issueTracker.projects = oldConfig.issueTracker.projects;
             console.info('Projects configured: ' + config.issueTracker.projects);
         } else {
