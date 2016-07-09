@@ -15,27 +15,15 @@ var killed = false;
 
 var userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH;
 
-if (!fs.existsSync(userHome + '/.testfairy-connect')) {
-    fs.mkdirSync(userHome + '/.testfairy-connect', 511);
-    fs.copySync(__dirname + '/config/examples/jira-basic-auth/config.json', userHome + '/.testfairy-connect/examples/jira-basic-auth/config.json');
-    fs.copySync(__dirname + '/config/examples/jira-oauth/config.json', userHome + '/.testfairy-connect/examples/jira-oauth/config.json');
-    fs.copySync(__dirname + '/config/examples/tfs/config.json', userHome + '/.testfairy-connect/examples/jira-tfc/config.json');
-}
-
-var configFilePath = userHome + '/.testfairy-connect/config.json';
 
 program
-    .version('1.0')
-    .option('-c, --config <path>', 'set config path. defaults to ' + userHome + '/.testfairy-connect/deploy.conf');
+    .option('-c, --config <path>', 'Set config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
+    .parse(process.argv);
 
-program.parse(process.argv);
-
-if (program.config) {
-    configFilePath = program.config;
-}
+var configFilePath = program.config || (userHome + '/.testfairy-connect/config.json');
 
 if (!fs.existsSync(configFilePath)) {
-    console.error('Config file (' + configFilePath + ') does not exist. Plese check examples in your ' + userHome + '/.testfairy-connect/examples.');
+    console.error('Config file (' + configFilePath + ') does not exist. Please run "node service.js configure"');
     process.exit(1);
 }
 

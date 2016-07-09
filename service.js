@@ -3,7 +3,7 @@
 var program = require('commander');
 
 program
-    .version('1');
+    .version('1.0');
 
 program
     .command('configure', 'run configuration wizard')
