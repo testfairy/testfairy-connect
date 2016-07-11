@@ -15,7 +15,8 @@
         defaults = {},
         oldConfig = null,
         userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH,
-        outputFile;
+        outputFile,
+        chalk = require('chalk');
 
     program
         .option('-f, --outputFile <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
@@ -39,8 +40,19 @@
         }
     }
 
+    inquirer.prompt.prompts.password.prototype.getQuestion = function () {
+        var message = chalk.green('?') + ' ' + chalk.bold(this.opt.message) + ' ';
+
+        // Append the default if available, and if question isn't answered
+        if (this.opt.default != null && this.status !== 'answered') {
+            message += chalk.dim('(*******) ');
+        }
+
+        return message;
+    };
+
     function generateKeyPair() {
-        execSync('openssl genrsa -out /tmp/jira_rsa 2048');
+        execSync('openssl genrsa -out /tmp/jira_rsa 2048 &> /dev/null');
         execSync('openssl rsa -in /tmp/jira_rsa -pubout > /tmp/jira_rsa_pub');
         var result = {
             'public_key': fs.readFileSync('/tmp/jira_rsa_pub').toString(),
@@ -140,7 +152,7 @@
         {
             type: 'input',
             name: 'URL',
-            message: 'What\'s your JIRA URL (e.g. https://example.atlassian.net or http://localhost:2990/jira)?',
+            message: 'What is your JIRA URL (e.g. https://example.atlassian.net or http://localhost:2990/jira)?',
             default: defaults.URL,
             filter: function (input) {
                 return input.replace(new RegExp('[\/]+$'), '');
@@ -162,7 +174,7 @@
         {
             type: 'input',
             name: 'issueType',
-            message: 'What\'s type of JIRA issues to be created using TestFairy Connect?',
+            message: 'What is the type of JIRA issues to be created using TestFairy Connect?',
             default: defaults.issueType || 'Bug',
             when: function (answers) {
                 return answers.type === 'jira';
@@ -188,41 +200,39 @@
         },
         {
             type: 'input',
-            name: 'oauth_keypair',
-            message: 'Press <Enter> to generate RSA key pair.',
-            filter: function () {
-                var applicationLinksUrl = jiraUrl + '/plugins/servlet/applinks/listApplicationLinks';
-                keypair = generateKeyPair();
-                console.info('Please go to ' + applicationLinksUrl + ' and create TestFairy Connect application link. Use these to fill in the form:');
-                console.info('Application: http://app.testfairy.com');
-                console.info('Application Name: TestFairy Connect');
-                console.info('Application Type: Generic Application');
-                console.info('Service Provider Name: TestFairy');
-                console.info('Consumer key: testfairy-connect');
-                console.info('Shared Secret: secret');
-                console.info('Request Token URL: /plugins/servlet/oauth/request-token');
-                console.info('Access Token URL: /plugins/servlet/oauth/access-token');
-                console.info('Authorize URL: /plugins/servlet/oauth/authorize');
-                console.info('Create incoming link: Checked!');
-                console.info('');
-                console.info('In "Incoming Authentication" dialog use:');
-                console.info('Public Key: \n' + keypair.public_key);
-                console.info('Please go to ' + applicationLinksUrl + ' and create TestFairy Connect application link. Use these to fill in the form:');
-                return keypair;
-            },
-            when: function (answers) {
-                jiraUrl = answers.URL;
-                return answers.jiraAuthType === 'oauth' && !(oldConfig && oldConfig.issueTracker.oauth);
-            }
-        },
-        {
-            type: 'input',
             name: 'oauth_request_token',
             message: function (answers) {
-                return 'IMPORTANT! Before proceeding, make sure that you complete JIRA Application Link setup as explained above.\n'
-                    + 'Did you configure a JIRA Application Link [' + jiraUrl + '/plugins/servlet/applinks/listApplicationLinks]?';
+                var applicationLinksUrl = jiraUrl + '/plugins/servlet/applinks/listApplicationLinks',
+                    message = '';
+                keypair = generateKeyPair();
+                message += '1. Open ' + applicationLinksUrl + ' in your browser.\n';
+                message += '2. In "Application field type: http://app.testfairy.com\n';
+                message += '3. Click on "Create new link" button.\n';
+                message += '4. In "Configure Application URL" dialog click "Continue" button.\n';
+                message += '5. In "Link applications" dialog enter these value:\n';
+                message += 'Application Name: TestFairy Connect\n';
+                message += 'Application Type: Generic Application\n';
+                message += 'Service Provider Name: TestFairy\n';
+                message += 'Consumer key: testfairy-connect\n';
+                message += 'Shared Secret: secret\n';
+                message += 'Request Token URL: /plugins/servlet/oauth/request-token\n';
+                message += 'Access Token URL: /plugins/servlet/oauth/access-token\n';
+                message += 'Authorize URL: /plugins/servlet/oauth/authorize\n';
+                message += 'Create incoming link: Checked!\n';
+                message += '\n';
+                message += '6. Click "Continue" button.\n';
+                message += '7. In "Incoming Authentication" dialog enter these values:\n';
+                message += 'Consumer Key: testfairy-connect\n';
+                message += 'Consumer Name: TestFairy Connect\n';
+                message += 'Public Key: \n' + keypair.public_key + '\n';
+                message += '8. Make sure that application link is successfully created.';
+                message += '9. Type "yes" here when done.';
+                return message;
             },
-            filter: function (input) {
+            validate: function (input) {
+                if (('' + input).toLowerCase() !== 'yes') {
+                    return false;
+                }
                 return new Promise(function (resolve, reject) {
                     consumer = new OAuth(
                         jiraUrl + "/plugins/servlet/oauth/request-token",
@@ -243,7 +253,7 @@
                     consumer.getOAuthRequestToken(
                         function (error, oauthToken, oauthTokenSecret, results) {
                             if (error) {
-                                reject(error);
+                                reject(error + error.stack);
                             } else {
                                 requestToken = oauthToken;
                                 requestTokenSecret = oauthTokenSecret;
@@ -293,7 +303,7 @@
             type: 'input',
             name: 'URL',
             default: defaults.URL,
-            message: 'What\'s your TFS Collection URL (e.g. http://localhost:8080/tfs/DefaultCollection)?',
+            message: 'What is your TFS Collection URL (e.g. http://localhost:8080/tfs/DefaultCollection)?',
             filter: function (input) {
                 return input.replace(new RegExp('[\/]+$'), '');
             },
@@ -304,7 +314,7 @@
         {
             type: 'list',
             name: 'workitemType',
-            message: 'What\'s type of TFS workitems to be created using TestFairy Connect?',
+            message: 'What is the type of TFS workitems to be created using TestFairy Connect?',
             choices: ['Bug', 'Task', 'User Story'],
             default: defaults.workitemType || 'Bug',
             when: function (answers) {
