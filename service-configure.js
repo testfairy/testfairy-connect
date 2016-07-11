@@ -120,6 +120,47 @@
     var keypair = {};
     var authorizationURL = '';
 
+    /*
+        // send a createmeta request
+
+	var projects = [];
+	for (var i=0; i<result.projects.length; i++) {
+		projects.push(result.projects[i].key);
+
+ 		if (result.projects[i].key == "GROUPSHOT") {
+			console.log(result.projects[i]);
+			var project = result.projects[i];
+			for (var j=0; j<project.issuetypes.length; j++) {
+
+				var issuetype = result.projects[i].issuetypes[j];
+				if (issuetype.name == "Task") {
+
+					var required = {};
+
+					var fields = issuetype.fields;
+					for (var name in fields) {
+						var description = fields[name];
+						if (true || description.required) {
+							required[name] = description;
+						}
+					}
+
+					console.log("Required fields:");
+					delete required['project']; // remove default values
+					delete required['summary'];
+					delete required['issuetype'];
+					delete required['assignee'];
+					delete required['reporter'];
+					console.log(required);
+				}
+			}
+		}
+	}
+
+	console.log(projects);
+	});
+	*/
+
     var questions = [
         {
             type: 'input',
@@ -291,6 +332,61 @@
         },
         {
             type: 'input',
+            name: 'foo',
+            message: 'foog',
+            default: function() {
+                console.log("COKC");
+            },
+            when: function(answers) {
+
+                function getRequiredFields(projects) {
+
+                    var ignored = ["summary", ""]
+                    var out = {};
+                    for (var i=0; i<projects.length; i++) {
+                        for (var j = 0; j < projects[i].issuetypes.length; j++) {
+                            var issuetype = projects[i].issuetypes[j];
+                            if (issuetype.name != 'Bug' && issuetype.name != 'Defect') {
+                                continue; // we don't handle these
+                            }
+
+                            var fields = issuetype.fields;
+                            for (var fieldName in fields) {
+                                if (!fields.hasOwnProperty(fieldName)) {
+                                    continue; // not own property
+                                }
+
+                                var fieldDesc = fields[fieldName];
+                                if (fieldDesc.required) {
+                                    var projectName = projects[i].name;
+                                    if (typeof(out[projectName]) == 'undefined') {
+                                        out[projectName] = [];
+                                    }
+
+                                    out[projectName].push(fieldDesc);
+                                }
+                            }
+                        }
+                    }
+
+                    console.log(out);
+
+                    return out;
+                }
+
+                var tracker = require('./lib/issue-tracker/types/jira');
+                tracker.options = answers;
+                tracker.initialize();
+                tracker.createMeta(function(e) {
+                    getRequiredFields(e.projects);
+                });
+
+                console.log("TOO");
+                return true;
+            }
+        },
+        {
+            type: 'input',
             name: 'URL',
             default: defaults.URL,
             message: 'What\'s your TFS Collection URL (e.g. http://localhost:8080/tfs/DefaultCollection)?',
@@ -332,10 +428,12 @@
             config.issueTracker.projects = oldConfig.issueTracker.projects;
             console.info('Projects configured: ' + config.issueTracker.projects);
         } else {
-            console.info('Configuration complete. Please do not forget to manually edit list of projects to be exposed to TestFairy.');
-            console.info('For your convenience, we are providing 2 placeholder projects (["PROJECT1", "PROJECT2"]) to this configuration.');
-            console.info('Please make sure that you edit this list to contain the projects that exist on your issue tracker.');
-            config.issueTracker.projects = ["PROJECT1", "PROJECT2"];
+            console.info('Configuration complete!');
+            if (config.type == 'tfs') {
+                console.info('For your convenience, we are providing 2 placeholder projects (["PROJECT1", "PROJECT2"]) to this configuration.');
+                console.info('Please make sure that you edit this list to contain the projects that exist on your issue tracker.');
+                config.issueTracker.projects = ["PROJECT1", "PROJECT2"];
+            }
         }
         console.info('Writing configuration to : ' + outputFile);
         fs.writeFileSync(outputFile, JSON.stringify(config, null, '\t'));
