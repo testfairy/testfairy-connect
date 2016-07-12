@@ -230,7 +230,7 @@
                 return message;
             },
             validate: function (input) {
-                if (('' + input).toLowerCase() !== 'yes') {
+                if (('' + input).trim().toLowerCase() !== 'yes') {
                     return false;
                 }
                 return new Promise(function (resolve, reject) {
@@ -253,12 +253,14 @@
                     consumer.getOAuthRequestToken(
                         function (error, oauthToken, oauthTokenSecret, results) {
                             if (error) {
-                                reject(error + error.stack);
+                                console.error(error + error.stack);
+                                resolve(false);
                             } else {
                                 requestToken = oauthToken;
                                 requestTokenSecret = oauthTokenSecret;
                                 authorizationURL = jiraUrl + '/plugins/servlet/oauth/authorize?oauth_token=' + requestToken;
-                                resolve(input);
+                                console.info(authorizationURL);
+                                resolve(true);
                             }
                         }
                     );
