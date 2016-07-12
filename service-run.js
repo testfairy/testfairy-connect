@@ -17,7 +17,7 @@ var userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH;
 
 
 program
-    .option('-c, --config <path>', 'Set config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
+    .option('-f, --file <path>', 'Set config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
     .parse(process.argv);
 
 var configFilePath = program.config || (userHome + '/.testfairy-connect/config.json');
@@ -67,5 +67,6 @@ eventEmitter.on('trackerInitialized', function () {
     testfairy.logger.log("TestFairy Connect is ready");
     main();
 });
+var program = require('commander');
 issueTracker.initialize();
 

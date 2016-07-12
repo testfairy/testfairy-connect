@@ -19,7 +19,7 @@
         chalk = require('chalk');
 
     program
-        .option('-f, --outputFile <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
+        .option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
         .parse(process.argv);
     outputFile = program.outputFile || (userHome + '/.testfairy-connect/config.json');
 
