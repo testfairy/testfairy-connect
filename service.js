@@ -1,5 +1,10 @@
 'use strict';
 
+// kill process on ctrl-c
+process.on('SIGINT', function() {
+    process.exit();
+});
+
 var program = require('commander');
 
 program
