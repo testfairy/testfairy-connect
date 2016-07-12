@@ -16,7 +16,13 @@
         oldConfig = null,
         userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH,
         outputFile,
-        chalk = require('chalk');
+        chalk = require('chalk'),
+        requestToken = false,
+        requestTokenSecret = false,
+        consumer = false,
+        jiraUrl = false,
+        keypair = {},
+        authorizationURL = '';
 
     program
         .option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
@@ -85,7 +91,7 @@
                 //keep old oauth config
                 jiraConfig.oauth = oldConfig.issueTracker.oauth;
             } else {
-                jiraConfig.oauth = answers.oauth_keypair;
+                jiraConfig.oauth = keypair;
                 jiraConfig.oauth.consumer_key = "testfairy-connect";
                 jiraConfig.oauth.access_token = answers.oauth_token.access_token;
                 jiraConfig.oauth.access_token_secret = answers.oauth_token.access_token_secret;
@@ -124,13 +130,6 @@
     }
 
     console.log('Welcome to TestFairy Connect configuration wizard.');
-
-    var requestToken = false;
-    var requestTokenSecret = false;
-    var consumer = false;
-    var jiraUrl = false;
-    var keypair = {};
-    var authorizationURL = '';
 
     var questions = [
         {
