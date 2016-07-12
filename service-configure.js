@@ -15,7 +15,7 @@
         defaults = {},
         oldConfig = null,
         userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH,
-        outputFile,
+        configFile,
         chalk = require('chalk'),
         requestToken = false,
         requestTokenSecret = false,
@@ -27,11 +27,11 @@
     program
         .option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
         .parse(process.argv);
-    outputFile = program.outputFile || (userHome + '/.testfairy-connect/config.json');
+    configFile = program.file || (userHome + '/.testfairy-connect/config.json');
 
-    if (fs.existsSync(outputFile)) {
-        console.log('Using configuration defaults from ' + outputFile);
-        oldConfig = JSON.parse(fs.readFileSync(outputFile));
+    if (fs.existsSync(configFile)) {
+        console.log('Using configuration defaults from ' + configFile);
+        oldConfig = JSON.parse(fs.readFileSync(configFile));
         defaults = {
             'testfairyApiKey': oldConfig.testfairy.apiKey,
             'URL': oldConfig.issueTracker.URL,
@@ -339,17 +339,8 @@
         }
         config.issueTracker.URL = answers.URL;
         console.info(chalk.green('SUCCESS!'));
-        if (oldConfig && oldConfig.issueTracker.projects) {
-            config.issueTracker.projects = oldConfig.issueTracker.projects;
-            console.info('Projects configured: ' + config.issueTracker.projects);
-        } else {
-            console.info('Configuration complete. Please do not forget to manually edit list of projects to be exposed to TestFairy.');
-            console.info('For your convenience, we are providing 2 placeholder projects (["PROJECT1", "PROJECT2"]) to this configuration.');
-            console.info('Please make sure that you edit this list to contain the projects that exist on your issue tracker.');
-            config.issueTracker.projects = ["PROJECT1", "PROJECT2"];
-        }
-        console.info('Writing configuration to : ' + outputFile);
-        fs.writeFileSync(outputFile, JSON.stringify(config, null, '\t'));
+        console.info('Writing configuration to : ' + configFile);
+        fs.writeFileSync(configFile, JSON.stringify(config, null, '\t'));
     }).catch(function (e) {
         console.error(e.message);
     });
