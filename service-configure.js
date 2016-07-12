@@ -225,7 +225,7 @@
                 message += 'Consumer Key: testfairy-connect\n';
                 message += 'Consumer Name: TestFairy Connect\n';
                 message += 'Public Key: \n' + keypair.public_key + '\n';
-                message += '8. Make sure that application link is successfully created.';
+                message += '8. Make sure that application link is successfully created.\n';
                 message += '9. Type "yes" here when done.';
                 return message;
             },
@@ -337,7 +337,7 @@
             config.issueTracker = buildTFSConfig(answers);
         }
         config.issueTracker.URL = answers.URL;
-        console.info('SUCCESS!');
+        console.info(chalk.green('SUCCESS!'));
         if (oldConfig && oldConfig.issueTracker.projects) {
             config.issueTracker.projects = oldConfig.issueTracker.projects;
             console.info('Projects configured: ' + config.issueTracker.projects);

@@ -27,7 +27,7 @@ if (!fs.existsSync(configFilePath)) {
     process.exit(1);
 }
 
-var config = extend(defaultConfig, JSON.parse(fs.readFileSync(userHome + '/.testfairy-connect/config.json'), 'utf8'));
+var config = extend(defaultConfig, JSON.parse(fs.readFileSync(configFilePath), 'utf8'));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
 
 testfairy.logger = console;
