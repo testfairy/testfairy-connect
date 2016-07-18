@@ -166,7 +166,7 @@
                 default: defaults.testfairyApiKey
             },
             {
-                type: 'list',
+                type: 'rawlist',
                 name: 'type',
                 default: defaults.type,
                 message: 'What kind of issue tracking system will you use with TestFairy Connect?',
@@ -188,7 +188,7 @@
                 }
             },
             {
-                type: 'list',
+                type: 'rawlist',
                 name: 'jiraAuthType',
                 message: 'How shall TestFairy Connect authenticate to JIRA?',
                 choices: ['basic', 'oauth'],
@@ -348,7 +348,7 @@
                 }
             },
             {
-                type: 'list',
+                type: 'rawlist',
                 name: 'workitemType',
                 message: 'What is the type of TFS workitems to be created using TestFairy Connect?',
                 choices: ['Bug', 'Task', 'User Story'],
@@ -358,7 +358,7 @@
                 }
             },
             {
-                type: 'list',
+                type: 'rawlist',
                 name: 'action',
                 message: 'Please review your choices. What would you like to do?',
                 default: 'save',
