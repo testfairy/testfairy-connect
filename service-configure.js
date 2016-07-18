@@ -192,7 +192,7 @@
                 name: 'jiraAuthType',
                 message: 'How shall TestFairy Connect authenticate to JIRA?',
                 choices: ['basic', 'oauth'],
-                default: defaults.jiraAuthType || 'basic',
+                default: ['basic', 'oauth'].indexOf(defaults.jiraAuthType),
                 when: function (answers) {
                     return answers.type === 'jira';
                 }
@@ -310,7 +310,7 @@
                     return 'Please allow TestFairy Connect access to your JIRA on this URL: \n' + authorizationURL + '\n' +
                         'Upon successful integration, copy the provided oauth_verifier, and paste it here: ';
                 },
-                filter: function (input) {
+                validate: function (input) {
                     return new Promise(function (resolve, reject) {
                         consumer.getOAuthAccessToken(
                             requestToken,
@@ -318,14 +318,12 @@
                             input.trim(),
                             function (error, oauthAccessToken, oauthAccessTokenSecret, results) {
                                 if (error) {
-                                    reject(error);
+                                    console.error('Error happened');
+                                    resolve(false);
                                 } else {
                                     accessToken = oauthAccessToken;
                                     accessTokenSecret = oauthAccessTokenSecret;
-                                    resolve({
-                                        'access_token': oauthAccessToken,
-                                        'access_token_secret': oauthAccessTokenSecret
-                                    });
+                                    resolve(true);
                                 }
                             }
                         );
@@ -390,6 +388,7 @@
                 break;
             case 'save':
                 save(answers, defaults);
+                process.exit(0);
                 break;
             case 'restart':
                 answers.oauth = (keypair ? false : defaults.oauth); //pass on old oauth configuration unless we have a new key
