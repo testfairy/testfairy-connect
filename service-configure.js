@@ -133,11 +133,7 @@
         return tfsConfig;
     }
 
-    function restart(answers) {
-        console.info('Restarting...');
-        launch(answers);
-    }
-    function save(answers, defaults) {
+    function answersToConfig(answers, defaults) {
         var config = {
             'testfairy': false,
             'issueTracker': false
@@ -150,7 +146,16 @@
             config.issueTracker = buildTFSConfig(answers);
         }
         config.issueTracker.URL = answers.URL;
-        console.info(chalk.green('SUCCESS!'));
+
+        return config;
+    }
+
+    function restart(answers) {
+        console.info('Restarting...');
+        return launch(answers);
+    }
+    function save(answers, defaults) {
+        var config = answersToConfig(answers, defaults);
         console.info('Writing configuration to : ' + configFile);
         fs.writeFileSync(configFile, JSON.stringify(config, null, '\t'));
     }
@@ -285,7 +290,9 @@
                         consumer.getOAuthRequestToken(
                             function (error, oauthToken, oauthTokenSecret, results) {
                                 if (error) {
+                                    console.error('\n');
                                     console.error(error + error.stack);
+                                    console.error('\n');
                                     resolve(false);
                                 } else {
                                     requestToken = oauthToken;
@@ -354,7 +361,37 @@
                 when: function (answers) {
                     return answers.type === 'tfs';
                 }
-            },
+            }
+        ];
+        return inquirer.prompt(questions)
+            .then(checkConnection)
+            .then(launchActionPrompt)
+            .catch(function (e) {
+                console.error(chalk.red(e.message));
+                console.error(e.stackTrace || '');
+            });
+    }
+
+    function checkConnection(answers) {
+        return new Promise(function (resolve, reject) {
+            //connect to issue tracker and
+            var config = answersToConfig(answers, defaults);
+            var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
+            issueTracker.initialize();
+            issueTracker.listProjects(function (result) {
+                console.log(result);
+                if (result.projects.length > 0) {
+                    console.error(chalk.green('Successfully connected to issue tracker.'));
+                } else {
+                    console.error(chalk.red('Could not connect to issue tracker. Please check your settings.'));
+                }
+                resolve(answers);
+            });
+        });
+    }
+
+    function launchActionPrompt(answers) {
+        return inquirer.prompt([
             {
                 type: 'rawlist',
                 name: 'action',
@@ -363,7 +400,7 @@
                 choices: [
                     {
                         key: 's',
-                        name: 'Save',
+                        name: 'Verify & Save',
                         value: 'save'
                     },
                     {
@@ -379,9 +416,8 @@
                     }
                 ]
             }
-        ];
-        inquirer.prompt(questions).then(function (answers) {
-            switch (answers.action) {
+        ]).then(function (actionAnswer) {
+            switch (actionAnswer.action) {
             case 'discard':
                 console.info('Config not saved. Exiting.');
                 process.exit(0);
@@ -395,10 +431,7 @@
                 restart(answers);
                 break;
             }
-        }).catch(function (e) {
-            console.error(e.message);
         });
     }
     launch(defaults);
-
 }());

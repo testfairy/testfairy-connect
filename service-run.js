@@ -68,6 +68,6 @@ eventEmitter.on('trackerInitialized', function () {
     testfairy.logger.log("TestFairy Connect is ready");
     main();
 });
-var program = require('commander');
+
 issueTracker.initialize();
 
