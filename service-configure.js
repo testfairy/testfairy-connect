@@ -173,7 +173,7 @@
             {
                 type: 'rawlist',
                 name: 'type',
-                default: defaults.type,
+                default: ['jira', 'tfs'].indexOf(defaults.type),
                 message: 'What kind of issue tracking system will you use with TestFairy Connect?',
                 choices: [
                     {'name': 'JIRA', 'value': 'jira'},
