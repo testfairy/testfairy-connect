@@ -1,8 +1,3 @@
-/**
- * Pizza delivery prompt example
- * run example by writing `node pizza.js` in your console
- */
-
 'use strict';
 
 (function () {
@@ -400,7 +395,7 @@
                 choices: [
                     {
                         key: 's',
-                        name: 'Verify & Save',
+                        name: 'Save',
                         value: 'save'
                     },
                     {
