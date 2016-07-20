@@ -388,43 +388,17 @@
     function launchActionPrompt(answers) {
         return inquirer.prompt([
             {
-                type: 'rawlist',
-                name: 'action',
-                message: 'Please review your choices. What would you like to do?',
-                default: 'save',
-                choices: [
-                    {
-                        key: 's',
-                        name: 'Save',
-                        value: 'save'
-                    },
-                    {
-                        key: 'r',
-                        name: 'Restart',
-                        value: 'restart'
-                    },
-                    new inquirer.Separator(),
-                    {
-                        key: 'd',
-                        name: 'Discard',
-                        value: 'discard'
-                    }
-                ]
+                type: 'confirm',
+                name: 'save',
+                message: 'Configuration complete, save to file?',
+                default: true
             }
         ]).then(function (actionAnswer) {
-            switch (actionAnswer.action) {
-            case 'discard':
-                console.info('Config not saved. Exiting.');
-                process.exit(0);
-                break;
-            case 'save':
+            if (actionAnswer.save) {
                 save(answers, defaults);
-                process.exit(0);
-                break;
-            case 'restart':
+            } else {
                 answers.oauth = (keypair ? false : defaults.oauth); //pass on old oauth configuration unless we have a new key
                 restart(answers);
-                break;
             }
         });
     }
