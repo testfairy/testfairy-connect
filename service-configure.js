@@ -379,7 +379,6 @@
             var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
             issueTracker.initialize();
             issueTracker.listProjects(function (result) {
-                console.log(result);
                 if (result.projects.length > 0) {
                     console.error(chalk.green('Successfully connected to issue tracker.'));
                 } else {
