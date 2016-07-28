@@ -37,8 +37,10 @@
             'issueType': oldConfig.issueTracker.issueType,
             'workitemType': oldConfig.issueTracker.workitemType,
             'type': oldConfig.issueTracker.type,
-            'oauth': oldConfig.issueTracker.oauth
+            'oauth': oldConfig.issueTracker.oauth,
+            'proxy': oldConfig.testfairy.proxy
         };
+
         if (oldConfig.issueTracker.username) {
             defaults.username = oldConfig.issueTracker.username;
             defaults.password = oldConfig.issueTracker.password;
@@ -69,11 +71,17 @@
     }
 
     function buildTestFairyConfig(answers) {
-        return {
+        var config = {
             "timeout": 1000,
             "apiKey": answers.testfairyApiKey,
             "URL": (oldConfig && oldConfig.testfairy.URL) || "https://app.testfairy.com/connect"
         };
+
+        if (answers.proxy) {
+            config.proxy = answers.proxy;
+        }
+
+        return config;
     }
 
     function buildJiraConfig(answers, defaults) {
@@ -82,6 +90,7 @@
             "issueType": answers.issueType,
             "strictSSL": false
         };
+
         if (answers.jiraAuthType === 'basic') {
             jiraConfig.username = answers.username;
             jiraConfig.password = answers.password;
@@ -97,11 +106,13 @@
                 }
             }
         }
+
         jiraConfig.fieldMapping = {
             "status": "status",
             "summary": "summary",
             "description": "description"
         };
+
         return jiraConfig;
     }
 
@@ -365,7 +376,16 @@
                 when: function (answers) {
                     return answers.type === 'tfs';
                 }
-            }
+            },
+            {
+                type: 'input',
+                name: 'proxy',
+                default: defaults.proxy,
+                message: 'Please enter HTTP proxy server address, leave empty if none:',
+                validate: function (input) {
+                    return input == "" || !!validUrl.isUri(input);
+                }
+             }
         ];
         return inquirer.prompt(questions)
             .then(checkConnection)

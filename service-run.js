@@ -11,10 +11,9 @@ var defaultConfig = {
         'timeout': 5000
     }
 };
+
 var killed = false;
-
 var userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH;
-
 
 program
     .option('-f, --file <path>', 'Set config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
@@ -28,6 +27,7 @@ if (!fs.existsSync(configFilePath)) {
 }
 
 console.info('Using config file: ' + configFilePath);
+
 var config = extend(defaultConfig, JSON.parse(fs.readFileSync(configFilePath), 'utf8'));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
 

@@ -21,6 +21,7 @@
     "oauth": "^0.9.14",
     "pinkie-promise": "^2.0.1",
     "superagent": "visionmedia/superagent",
+    "superagent-proxy": "1.0.1",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {}
