@@ -1,8 +1,3 @@
-/**
- * Pizza delivery prompt example
- * run example by writing `node pizza.js` in your console
- */
-
 'use strict';
 
 (function () {
@@ -12,6 +7,7 @@
         execSync = require('child_process').execSync,
         OAuth = require('oauth').OAuth,
         Promise = require('pinkie-promise'),
+        validUrl = require('valid-url'),
         defaults = {},
         oldConfig = null,
         userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH,
@@ -162,12 +158,17 @@
 
     console.log('Welcome to TestFairy Connect configuration wizard.');
 
+    function nonEmpty (input) {
+        return input.length > 0;
+    }
+
     function launch(defaults) {
         var questions = [
             {
                 type: 'input',
                 name: 'testfairyApiKey',
                 message: 'What is your TestFairy API Key?',
+                validate: nonEmpty,
                 default: defaults.testfairyApiKey
             },
             {
@@ -187,6 +188,9 @@
                 default: defaults.URL,
                 filter: function (input) {
                     return input.replace(new RegExp('[\/]+$'), '');
+                },
+                validate: function (input) {
+                    return !!validUrl.isUri(input);
                 },
                 when: function (answers) {
                     return answers.type === 'jira';
@@ -215,9 +219,7 @@
                 type: 'input',
                 name: 'username',
                 message: 'JIRA username:',
-                validate: function (input) {
-                    return input.length > 0;
-                },
+                validate: nonEmpty,
                 default: defaults.username,
                 when: function (answers) {
                     return answers.jiraAuthType === 'basic';
@@ -228,9 +230,7 @@
                 name: 'password',
                 default: defaults.password,
                 message: 'JIRA password:',
-                validate: function (input) {
-                    return input.length > 0;
-                },
+                validate: nonEmpty,
                 when: function (answers) {
                     return answers.jiraAuthType === 'basic';
                 }
@@ -349,6 +349,9 @@
                 filter: function (input) {
                     return input.replace(new RegExp('[\/]+$'), '');
                 },
+                validate: function (input) {
+                    return !!validUrl.isUri(input);
+                },
                 when: function (answers) {
                     return answers.type === 'tfs';
                 }
@@ -393,45 +396,20 @@
     function launchActionPrompt(answers) {
         return inquirer.prompt([
             {
-                type: 'rawlist',
-                name: 'action',
-                message: 'Please review your choices. What would you like to do?',
-                default: 'save',
-                choices: [
-                    {
-                        key: 's',
-                        name: 'Verify & Save',
-                        value: 'save'
-                    },
-                    {
-                        key: 'r',
-                        name: 'Restart',
-                        value: 'restart'
-                    },
-                    new inquirer.Separator(),
-                    {
-                        key: 'd',
-                        name: 'Discard',
-                        value: 'discard'
-                    }
-                ]
+                type: 'confirm',
+                name: 'save',
+                message: 'Configuration complete, save to file?',
+                default: true
             }
         ]).then(function (actionAnswer) {
-            switch (actionAnswer.action) {
-            case 'discard':
-                console.info('Config not saved. Exiting.');
-                process.exit(0);
-                break;
-            case 'save':
+            if (actionAnswer.save) {
                 save(answers, defaults);
-                process.exit(0);
-                break;
-            case 'restart':
+            } else {
                 answers.oauth = (keypair ? false : defaults.oauth); //pass on old oauth configuration unless we have a new key
                 restart(answers);
-                break;
             }
         });
     }
     launch(defaults);
+
 }());
