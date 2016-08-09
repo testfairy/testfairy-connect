@@ -9,5 +9,5 @@ The key part of TestFairy Connect is the agent service (TFC Agent) that runs on 
 
 ## Installation 
 
-For installation procedure and further details, please visit http://docs.testfairy.com/Integrations/TestFairy_Connect.html
+For installation procedure and further details, please visit https://docs.testfairy.com/Integrations/TestFairy_Connect.html
 
