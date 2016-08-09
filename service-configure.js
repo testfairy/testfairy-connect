@@ -8,11 +8,11 @@
         OAuth = require('oauth').OAuth,
         Promise = require('pinkie-promise'),
         validUrl = require('valid-url'),
+        chalk = require('chalk'),
         defaults = {},
         oldConfig = null,
         userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH,
         configFile,
-        chalk = require('chalk'),
         requestToken = false,
         accessToken = false,
         requestTokenSecret = false,
@@ -65,6 +65,7 @@
             'public_key': fs.readFileSync('/tmp/jira_rsa_pub').toString(),
             'private_key': fs.readFileSync('/tmp/jira_rsa').toString()
         };
+
         fs.remove('/tmp/jira_rsa_pub');
         fs.remove('/tmp/jira_rsa');
         return result;
@@ -152,8 +153,8 @@
         } else if (answers.type === 'tfs') {
             config.issueTracker = buildTFSConfig(answers);
         }
-        config.issueTracker.URL = answers.URL;
 
+        config.issueTracker.URL = answers.URL;
         return config;
     }
 
@@ -161,6 +162,7 @@
         console.info('Restarting...');
         return launch(answers);
     }
+
     function save(answers, defaults) {
         var config = answersToConfig(answers, defaults);
         console.info('Writing configuration to : ' + configFile);
@@ -169,7 +171,7 @@
 
     console.log('Welcome to TestFairy Connect configuration wizard.');
 
-    function nonEmpty (input) {
+    function nonEmpty(input) {
         return input.length > 0;
     }
 
@@ -387,6 +389,7 @@
                 }
              }
         ];
+
         return inquirer.prompt(questions)
             .then(checkConnection)
             .then(launchActionPrompt)
@@ -430,6 +433,7 @@
             }
         });
     }
+
     launch(defaults);
 
 }());
