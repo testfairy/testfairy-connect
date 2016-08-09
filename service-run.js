@@ -49,7 +49,7 @@ function main() {
             actionCount;
 
         for (i = 0, actionCount = actions.length; i < actionCount; i += 1) {
-            testfairy.logger.info(JSON.stringify(actions[i]));
+            testfairy.logger.info("Received request: " + JSON.stringify(actions[i]));
             issueTracker.run(actions[i], testfairy.sendCallback);
         }
 
