@@ -55,7 +55,6 @@ function main() {
 
         if (!killed) {
             var nextTimeout = (actionCount > 0) ? 0 : config.testfairy.timeout; // do not sleep if there was an action
-            console.info("Sleeping " + nextTimeout);
             setTimeout(main, nextTimeout);
         }
     });
