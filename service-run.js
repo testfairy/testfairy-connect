@@ -54,12 +54,9 @@ function main() {
         }
 
         if (!killed) {
-            if (actionCount) {
-                // do not sleep if there was an action
-                main();
-            } else {
-                setTimeout(main, config.testfairy.timeout);
-            }
+            var nextTimeout = (actionCount > 0) ? 0 : config.testfairy.timeout; // do not sleep if there was an action
+            console.info("Sleeping " + nextTimeout);
+            setTimeout(main, nextTimeout);
         }
     });
 }
