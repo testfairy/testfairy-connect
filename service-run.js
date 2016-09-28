@@ -65,5 +65,15 @@ eventEmitter.on('trackerInitialized', function () {
     main();
 });
 
+eventEmitter.on('trackerError', function (error, fatal) {
+    testfairy.sendError(error);
+    testfairy.logger.error(error);
+
+    if (fatal) {
+        setTimeout(function() {process.exit(2)}, 5000);
+    }
+
+});
+
 issueTracker.initialize();
 
