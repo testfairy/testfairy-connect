@@ -20,3 +20,7 @@ deploy:
   on:
     tags: true
     repo: testfairy/testfairy-connect
+
+notifications:
+  email: false
+  
