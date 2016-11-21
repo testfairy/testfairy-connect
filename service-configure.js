@@ -181,11 +181,11 @@
             {
                 type: 'input',
                 name: 'testfairyConnectEndpoint',
-                message: 'What is your TestFairy Connect endpoint (do not change unless you have custom testfairy domain)?',
+                message: 'What is your TestFairy Connect endpoint (e.g. https://acme.testfairy.com/connect)?',
                 validate: function (input) {
                     return !!validUrl.isUri(input);
                 },
-                default: defaults.testfairyConnectEndpoint || 'https://app.testfairy.com/connect'
+                default: defaults.testfairyConnectEndpoint
             },
             {
                 type: 'input',
