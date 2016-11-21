@@ -31,6 +31,7 @@
         console.log('Using configuration defaults from ' + configFile);
         oldConfig = JSON.parse(fs.readFileSync(configFile));
         defaults = {
+            'testfairyConnectEndpoint': oldConfig.testfairy.URL,
             'testfairyApiKey': oldConfig.testfairy.apiKey,
             'URL': oldConfig.issueTracker.URL,
             'jiraAuthType': oldConfig.issueTracker.type === 'jira' ? (oldConfig.issueTracker.oauth ? 'oauth' : 'basic') : null,
@@ -75,7 +76,7 @@
         var config = {
             "timeout": 1000,
             "apiKey": answers.testfairyApiKey,
-            "URL": (oldConfig && oldConfig.testfairy.URL) || "https://app.testfairy.com/connect"
+            "URL": answers.testfairyConnectEndpoint
         };
 
         if (answers.proxy) {
@@ -177,6 +178,15 @@
 
     function launch(defaults) {
         var questions = [
+            {
+                type: 'input',
+                name: 'testfairyConnectEndpoint',
+                message: 'What is your TestFairy Connect endpoint (e.g. https://acme.testfairy.com/connect)?',
+                validate: function (input) {
+                    return !!validUrl.isUri(input);
+                },
+                default: defaults.testfairyConnectEndpoint
+            },
             {
                 type: 'input',
                 name: 'testfairyApiKey',

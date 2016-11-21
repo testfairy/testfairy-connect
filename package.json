@@ -20,7 +20,7 @@
     "jira-client": "^3.0.2",
     "oauth": "^0.9.14",
     "pinkie-promise": "^2.0.1",
-    "superagent": "visionmedia/superagent",
+    "superagent": "^2.3.0",
     "superagent-proxy": "1.0.1",
     "valid-url": "^1.0.9"
   },
