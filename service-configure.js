@@ -25,6 +25,7 @@
 	program
 		.option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
 		.parse(process.argv);
+
 	configFile = program.file || (userHome + '/.testfairy-connect/config.json');
 
 	if (fs.existsSync(configFile)) {
@@ -58,6 +59,13 @@
 		return message;
 	};
 
+	console.log('Welcome to TestFairy Connect configuration wizard.');
+
+	/**
+	 * Generate an RSA key. Returns both public and private parts.
+	 *
+	 * @returns {{public_key: (String|string|*), private_key: (String|string|*)}}
+	 */
 	function generateKeyPair() {
 		execSync('openssl genrsa -out /tmp/jira_rsa 2048 &> /dev/null');
 		execSync('openssl rsa -in /tmp/jira_rsa -pubout > /tmp/jira_rsa_pub');
@@ -119,9 +127,14 @@
 
 	function buildTFSConfig(answers) {
 		var tfsConfig = {
-			"type": "tfs",
+			"type": answers.type, // [tfs, tfs-rest-api]
 			"workitemType": answers.workitemType
 		};
+
+		if (answers.type == "tfs-rest-api") {
+			tfsConfig.username = answers.username;
+			tfsConfig.password = answers.password;
+		}
 
 		if (answers.workitemType === 'Bug') {
 			tfsConfig.fieldMapping = {
@@ -130,6 +143,7 @@
 				"description": "Repro Steps"
 			};
 		}
+
 		if (answers.workitemType === 'Task' || answers.workitemType === 'User Story') {
 			tfsConfig.fieldMapping = {
 				"status": "State",
@@ -150,7 +164,7 @@
 
 		if (answers.type === 'jira') {
 			config.issueTracker = buildJiraConfig(answers, defaults);
-		} else if (answers.type === 'tfs') {
+		} else if (answers.type === 'tfs' || answers.type == "tfs-rest-api") {
 			config.issueTracker = buildTFSConfig(answers);
 		}
 
@@ -158,23 +172,39 @@
 		return config;
 	}
 
+	/**
+	 * Restart wizard
+	 *
+	 * @param answers
+	 * @returns {*}
+	 */
 	function restart(answers) {
 		console.info('Restarting...');
 		return launch(answers);
 	}
 
+	/**
+	 * Save wizard configuration to configFile
+	 *
+	 * @param answers
+	 * @param defaults
+	 */
 	function save(answers, defaults) {
 		var config = answersToConfig(answers, defaults);
 		console.info('Writing configuration to : ' + configFile);
 		fs.writeFileSync(configFile, JSON.stringify(config, null, '\t'));
 	}
 
-	console.log('Welcome to TestFairy Connect configuration wizard.');
-
 	function nonEmpty(input) {
 		return input.length > 0;
 	}
 
+	/**
+	 * Wizard entry point. This is where the questions start.
+	 *
+	 * @param defaults
+	 * @returns {*}
+	 */
 	function launch(defaults) {
 		var questions = [
 			{
@@ -187,11 +217,12 @@
 			{
 				type: 'rawlist',
 				name: 'type',
-				default: ['jira', 'tfs'].indexOf(defaults.type),
+				default: ['jira', 'tfs', 'tfs-rest-api'].indexOf(defaults.type),
 				message: 'What kind of issue tracking system will you use with TestFairy Connect?',
 				choices: [
 					{'name': 'JIRA', 'value': 'jira'},
-					{'name': 'TFS', 'value': 'tfs'}
+					{'name': 'TFS', 'value': 'tfs'},
+					{'name': 'TFS with REST API', 'value': 'tfs-rest-api'}
 				]
 			},
 			{
@@ -366,7 +397,7 @@
 					return !!validUrl.isUri(input);
 				},
 				when: function (answers) {
-					return answers.type === 'tfs';
+					return answers.type === 'tfs' || answers.type == "tfs-rest-api";
 				}
 			},
 			{
@@ -374,9 +405,27 @@
 				name: 'workitemType',
 				message: 'What is the type of TFS workitems to be created using TestFairy Connect?',
 				choices: ['Bug', 'Task', 'User Story'],
-				default: defaults.workitemType || 'Bug',
+				default: ['Bug', 'Task', 'User Story'].indexOf(defaults.workitemType),
 				when: function (answers) {
-					return answers.type === 'tfs';
+					return answers.type === 'tfs' || answers.type == "tfs-rest-api";
+				}
+			},
+			{
+				type: 'input',
+				name: 'username',
+				message: 'What is the username used when connecting to TFS?',
+				default: defaults.username,
+				when: function (answers) {
+					return answers.type == "tfs-rest-api";
+				}
+			},
+			{
+				type: 'input',
+				name: 'password',
+				message: 'What is the password used when connecting to TFS with that user?',
+				default: defaults.password,
+				when: function (answers) {
+					return answers.type == "tfs-rest-api";
 				}
 			},
 			{
@@ -386,6 +435,9 @@
 				message: 'Please enter HTTP proxy server address, leave empty if none:',
 				validate: function (input) {
 					return input == "" || !!validUrl.isUri(input);
+				},
+				when: function (answers) {
+					return answers.type == "jira"
 				}
 			}
 		];
@@ -400,6 +452,7 @@
 	}
 
 	function checkConnection(answers) {
+		console.info("Checking connection");
 		return new Promise(function (resolve, reject) {
 			//connect to issue tracker and
 			var config = answersToConfig(answers, defaults);
@@ -417,6 +470,7 @@
 	}
 
 	function launchActionPrompt(answers) {
+		console.info("launchActionPrompt");
 		return inquirer.prompt([
 			{
 				type: 'confirm',
