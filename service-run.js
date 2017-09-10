@@ -45,10 +45,9 @@ issueTracker.setEventEmitter(eventEmitter);
 
 function main() {
 	testfairy.getActions(function (actions) {
-		var i,
-			actionCount;
 
-		for (i = 0, actionCount = actions.length; i < actionCount; i += 1) {
+		var actionCount = actions.length;
+		for (var i = 0; i < actionCount; i++) {
 			testfairy.logger.info("Received request: " + JSON.stringify(actions[i]));
 			issueTracker.run(actions[i], testfairy.sendCallback);
 		}
@@ -71,7 +70,7 @@ eventEmitter.on('trackerError', function (error, fatal) {
 
 	if (fatal) {
 		setTimeout(function () {
-			process.exit(2)
+			process.exit(2);
 		}, 5000);
 	}
 
