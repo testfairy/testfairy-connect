@@ -409,6 +409,8 @@
 				if (result.projects.length > 0) {
 					console.error(chalk.green('Successfully connected to issue tracker.'));
 				} else {
+					console.log("This is what we got from the server:");
+					console.log(result);
 					console.error(chalk.red('Could not connect to issue tracker. Please check your settings.'));
 				}
 				resolve(answers);
