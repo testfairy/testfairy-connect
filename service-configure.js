@@ -32,6 +32,7 @@
 		oldConfig = JSON.parse(fs.readFileSync(configFile));
 		defaults = {
 			'testfairyApiKey': oldConfig.testfairy.apiKey,
+			'testfairyServerEndpoint': oldConfig.testfairy.URL,
 			'URL': oldConfig.issueTracker.URL,
 			'jiraAuthType': oldConfig.issueTracker.type === 'jira' ? (oldConfig.issueTracker.oauth ? 'oauth' : 'basic') : null,
 			'issueType': oldConfig.issueTracker.issueType,
@@ -75,7 +76,7 @@
 		var config = {
 			"timeout": 1000,
 			"apiKey": answers.testfairyApiKey,
-			"URL": (oldConfig && oldConfig.testfairy.URL) || "https://app.testfairy.com/connect"
+			"URL": answers.testfairyServerEndpoint,
 		};
 
 		if (answers.proxy) {
@@ -177,6 +178,13 @@
 
 	function launch(defaults) {
 		var questions = [
+			{
+				type: 'input',
+				name: 'testfairyServerEndpoint',
+				message: 'Enter your TestFairy server endpoint? (e.g. https://acme.testfairy.com/connect)',
+				validate: nonEmpty,
+				default: defaults.testfairyServerEndpoint,
+			},
 			{
 				type: 'input',
 				name: 'testfairyApiKey',
@@ -401,8 +409,11 @@
 
 	function checkConnection(answers) {
 		return new Promise(function (resolve, reject) {
+
 			//connect to issue tracker and
 			var config = answersToConfig(answers, defaults);
+			console.log(chalk.green("Attempting a connection to " + config.issueTracker.URL));
+
 			var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
 			issueTracker.initialize();
 			issueTracker.listProjects(function (result) {
