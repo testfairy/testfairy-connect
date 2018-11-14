@@ -5,6 +5,7 @@
 		program = require('commander'),
 		fs = require('fs-extra'),
 		execSync = require('child_process').execSync,
+		EventEmitter = require('events').EventEmitter,
 		OAuth = require('oauth').OAuth,
 		Promise = require('pinkie-promise'),
 		validUrl = require('valid-url'),
@@ -118,30 +119,6 @@
 		return jiraConfig;
 	}
 
-	function buildTFSConfig(answers) {
-		var tfsConfig = {
-			"type": "tfs",
-			"workitemType": answers.workitemType
-		};
-
-		if (answers.workitemType === 'Bug') {
-			tfsConfig.fieldMapping = {
-				"status": "State",
-				"summary": "Title",
-				"description": "Repro Steps"
-			};
-		}
-		if (answers.workitemType === 'Task' || answers.workitemType === 'User Story') {
-			tfsConfig.fieldMapping = {
-				"status": "State",
-				"summary": "Title",
-				"description": "Description"
-			};
-		}
-
-		return tfsConfig;
-	}
-
 	function answersToConfig(answers, defaults) {
 		var config = {
 			'testfairy': false,
@@ -151,8 +128,6 @@
 
 		if (answers.type === 'jira') {
 			config.issueTracker = buildJiraConfig(answers, defaults);
-		} else if (answers.type === 'tfs') {
-			config.issueTracker = buildTFSConfig(answers);
 		}
 
 		config.issueTracker.URL = answers.URL;
@@ -199,7 +174,6 @@
 				message: 'What kind of issue tracking system will you use with TestFairy Connect?',
 				choices: [
 					{'name': 'JIRA', 'value': 'jira'},
-					{'name': 'TFS', 'value': 'tfs'}
 				]
 			},
 			{
@@ -364,31 +338,6 @@
 			},
 			{
 				type: 'input',
-				name: 'URL',
-				default: defaults.URL,
-				message: 'What is your TFS Collection URL (e.g. http://localhost:8080/tfs/DefaultCollection)?',
-				filter: function (input) {
-					return input.replace(new RegExp('[\/]+$'), '');
-				},
-				validate: function (input) {
-					return !!validUrl.isUri(input);
-				},
-				when: function (answers) {
-					return answers.type === 'tfs';
-				}
-			},
-			{
-				type: 'rawlist',
-				name: 'workitemType',
-				message: 'What is the type of TFS workitems to be created using TestFairy Connect?',
-				choices: ['Bug', 'Task', 'User Story'],
-				default: defaults.workitemType || 'Bug',
-				when: function (answers) {
-					return answers.type === 'tfs';
-				}
-			},
-			{
-				type: 'input',
 				name: 'proxy',
 				default: defaults.proxy,
 				message: 'Please enter HTTP proxy server address, leave empty if none:',
@@ -415,6 +364,10 @@
 			console.log(chalk.green("Attempting a connection to " + config.issueTracker.URL));
 
 			var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
+
+			var eventEmitter = new EventEmitter();
+			issueTracker.setEventEmitter(eventEmitter);
+
 			issueTracker.initialize();
 			issueTracker.listProjects(function (result) {
 				if (result.projects.length > 0) {
