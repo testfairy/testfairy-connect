@@ -28,6 +28,18 @@
 		.parse(process.argv);
 	configFile = program.file || (userHome + '/.testfairy-connect/config.json');
 
+	console.log('Welcome to TestFairy Connect configuration wizard. (if will be saved into ' + configFile + ')');
+
+	const dirname = require('path').dirname(configFile);
+	if (!fs.pathExistsSync(dirname)) {
+		try {
+			fs.mkdirpSync(dirname);
+		} catch (err) {
+			console.error("Failed to create folder", err);
+			process.exit(1);
+		}
+	}
+
 	if (fs.existsSync(configFile)) {
 		console.log('Using configuration defaults from ' + configFile);
 		oldConfig = JSON.parse(fs.readFileSync(configFile));
@@ -145,8 +157,6 @@
 		fs.writeFileSync(configFile, JSON.stringify(config, null, '\t'));
 	}
 
-	console.log('Welcome to TestFairy Connect configuration wizard.');
-
 	function nonEmpty(input) {
 		return input.length > 0;
 	}
@@ -157,8 +167,13 @@
 				type: 'input',
 				name: 'testfairyServerEndpoint',
 				message: 'Enter your TestFairy server endpoint? (e.g. https://acme.testfairy.com/connect)',
+				filter: function (input) {
+					const url = new URL(input);
+					url.pathname = "/connect";
+					return url.href;
+				},
 				validate: nonEmpty,
-				default: defaults.testfairyServerEndpoint,
+				default: defaults.testfairyServerEndpoint
 			},
 			{
 				type: 'input',
@@ -348,6 +363,7 @@
 		];
 
 		return inquirer.prompt(questions)
+			.then((answers) => console.dir(answers))
 			.then(checkConnection)
 			.then(launchActionPrompt)
 			.catch(function (e) {

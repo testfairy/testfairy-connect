@@ -15,7 +15,7 @@
     "commander": "^2.9.0",
     "console-stamp": "^0.2.0",
     "extend": "^3.0.0",
-    "fs-extra": "^0.27.0",
+    "fs-extra": "^7.0.1",
     "inquirer": "^1.1.0",
     "jira-client": "^3.0.2",
     "oauth": "^0.9.14",
