@@ -253,7 +253,7 @@
 						message = '';
 					keypair = generateKeyPair();
 					message += '1. Open ' + applicationLinksUrl + ' in your browser.\n';
-					message += '2. In "URL of Application" field type: https://app.testfairy.com\n';
+					message += '2. In "URL of Application" field type: ' + new URL(answers.testfairyServerEndpoint).origin + '\n';
 					message += '3. Click on "Create new link" button.\n';
 					message += '4. In "Configure Application URL" dialog click "Continue" button.\n';
 					message += '5. In "Link applications" dialog enter these values:\n';
