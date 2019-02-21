@@ -28,6 +28,8 @@
 		.parse(process.argv);
 	configFile = program.file || (userHome + '/.testfairy-connect/config.json');
 
+	console.log('Welcome to TestFairy Connect configuration wizard. (if will be saved into ' + configFile + ')');
+
 	if (fs.existsSync(configFile)) {
 		console.log('Using configuration defaults from ' + configFile);
 		oldConfig = JSON.parse(fs.readFileSync(configFile));
@@ -46,6 +48,16 @@
 		if (oldConfig.issueTracker.username) {
 			defaults.username = oldConfig.issueTracker.username;
 			defaults.password = oldConfig.issueTracker.password;
+		}
+	}
+
+	const dirname = require('path').dirname(configFile);
+	if (!fs.pathExistsSync(dirname)) {
+		try {
+			fs.mkdirpSync(dirname);
+		} catch (err) {
+			console.error("Failed to create folder", err);
+			process.exit(1);
 		}
 	}
 
@@ -145,8 +157,6 @@
 		fs.writeFileSync(configFile, JSON.stringify(config, null, '\t'));
 	}
 
-	console.log('Welcome to TestFairy Connect configuration wizard.');
-
 	function nonEmpty(input) {
 		return input.length > 0;
 	}
@@ -157,68 +167,13 @@
 				type: 'input',
 				name: 'testfairyServerEndpoint',
 				message: 'Enter your TestFairy server endpoint? (e.g. https://acme.testfairy.com/connect)',
-				validate: nonEmpty,
-				default: defaults.testfairyServerEndpoint,
-			},
-			{
-				type: 'input',
-				name: 'testfairyApiKey',
-				message: 'What is your TestFairy API Key?',
-				validate: nonEmpty,
-				default: defaults.testfairyApiKey
-			},
-			{
-				type: 'rawlist',
-				name: 'type',
-				default: ['jira', 'tfs'].indexOf(defaults.type),
-				message: 'What kind of issue tracking system will you use with TestFairy Connect?',
-				choices: [
-					{'name': 'JIRA', 'value': 'jira'},
-				]
-			},
-			{
-				type: 'input',
-				name: 'URL',
-				message: 'What is your JIRA URL (e.g. https://example.atlassian.net or http://localhost:2990/jira)?',
-				default: defaults.URL,
 				filter: function (input) {
-					return input.replace(new RegExp('[\/]+$'), '');
+					const url = new URL(input);
+					url.pathname = "/connect";
+					return url.href;
 				},
-				validate: function (input) {
-					return !!validUrl.isUri(input);
-				},
-				when: function (answers) {
-					return answers.type === 'jira';
-				}
-			},
-			{
-				type: 'rawlist',
-				name: 'jiraAuthType',
-				message: 'How shall TestFairy Connect authenticate to JIRA?',
-				choices: ['basic', 'oauth'],
-				default: ['basic', 'oauth'].indexOf(defaults.jiraAuthType),
-				when: function (answers) {
-					return answers.type === 'jira';
-				}
-			},
-			{
-				type: 'input',
-				name: 'issueType',
-				message: 'What is the type of JIRA issues to be created using TestFairy Connect?',
-				default: defaults.issueType || 'Bug',
-				when: function (answers) {
-					return answers.type === 'jira';
-				}
-			},
-			{
-				type: 'input',
-				name: 'username',
-				message: 'JIRA username:',
 				validate: nonEmpty,
-				default: defaults.username,
-				when: function (answers) {
-					return answers.jiraAuthType === 'basic';
-				}
+				default: defaults.testfairyServerEndpoint
 			},
 			{
 				type: 'password',
@@ -348,6 +303,7 @@
 		];
 
 		return inquirer.prompt(questions)
+			.then((answers) => console.dir(answers))
 			.then(checkConnection)
 			.then(launchActionPrompt)
 			.catch(function (e) {
