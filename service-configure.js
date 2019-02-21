@@ -48,7 +48,6 @@
 			'testfairyServerEndpoint': oldConfig.testfairy.URL,
 			'URL': oldConfig.issueTracker.URL,
 			'jiraAuthType': oldConfig.issueTracker.type === 'jira' ? (oldConfig.issueTracker.oauth ? 'oauth' : 'basic') : null,
-			'issueType': oldConfig.issueTracker.issueType,
 			'workitemType': oldConfig.issueTracker.workitemType,
 			'type': oldConfig.issueTracker.type,
 			'oauth': oldConfig.issueTracker.oauth,
@@ -102,7 +101,6 @@
 	function buildJiraConfig(answers, defaults) {
 		var jiraConfig = {
 			"type": "jira",
-			"issueType": answers.issueType,
 			"strictSSL": false
 		};
 
@@ -212,15 +210,6 @@
 				message: 'How shall TestFairy Connect authenticate to JIRA?',
 				choices: ['basic', 'oauth'],
 				default: ['basic', 'oauth'].indexOf(defaults.jiraAuthType),
-				when: function (answers) {
-					return answers.type === 'jira';
-				}
-			},
-			{
-				type: 'input',
-				name: 'issueType',
-				message: 'What is the type of JIRA issues to be created using TestFairy Connect?',
-				default: defaults.issueType || 'Bug',
 				when: function (answers) {
 					return answers.type === 'jira';
 				}
