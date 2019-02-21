@@ -241,26 +241,26 @@
 					var applicationLinksUrl = jiraUrl + '/plugins/servlet/applinks/listApplicationLinks',
 						message = '';
 					keypair = generateKeyPair();
-					message += '1. Open ' + applicationLinksUrl + ' in your browser.\n';
-					message += '2. In "URL of Application" field type: ' + new URL(answers.testfairyServerEndpoint).origin + '\n';
-					message += '3. Click on "Create new link" button.\n';
+					message += '1. Open ' + chalk.blue.underline(applicationLinksUrl) + ' in your browser.\n';
+					message += '2. In "URL of Application" field type: ' + chalk.blue.underline(new URL(answers.testfairyServerEndpoint).origin) + '\n';
+					message += '3. Click on ' + chalk.blue("Create new link") + ' button.\n';
 					message += '4. In "Configure Application URL" dialog click "Continue" button.\n';
 					message += '5. In "Link applications" dialog enter these values:\n';
-					message += '   Application Name: TestFairy Connect\n';
-					message += '   Application Type: Generic Application\n';
-					message += '   Service Provider Name: TestFairy\n';
-					message += '   Consumer key: testfairy-connect\n';
-					message += '   Shared Secret: secret\n';
-					message += '   Request Token URL: /plugins/servlet/oauth/request-token\n';
-					message += '   Access Token URL: /plugins/servlet/oauth/access-token\n';
-					message += '   Authorize URL: /plugins/servlet/oauth/authorize\n';
+					message += '   Application Name: ' + chalk.blue.underline('TestFairy Connect') +'\n';
+					message += '   Application Type: ' + chalk.blue('Generic Application') + '\n';
+					message += '   Service Provider Name: ' + chalk.blue.underline('TestFairy') + '\n';
+					message += '   Consumer key: ' + chalk.blue.underline('testfairy-connect') + '\n';
+					message += '   Shared Secret: ' + chalk.blue.underline('secret') + '\n';
+					message += '   Request Token URL: ' + chalk.blue.underline('/plugins/servlet/oauth/request-token') +' \n';
+					message += '   Access Token URL: ' + chalk.blue.underline('/plugins/servlet/oauth/access-token') + '\n';
+					message += '   Authorize URL: ' + chalk.blue.underline('/plugins/servlet/oauth/authorize') + '\n';
 					message += '   Create incoming link: Checked!\n';
 					message += '\n';
-					message += '6. Click "Continue" button.\n';
+					message += '6. Click ' + chalk.blue("Continue") + 'button.\n';
 					message += '7. In "Incoming Authentication" dialog enter these values:\n';
-					message += '   Consumer Key: testfairy-connect\n';
-					message += '   Consumer Name: TestFairy Connect\n';
-					message += '   Public Key: \n' + keypair.public_key + '\n';
+					message += '   Consumer Key: ' + chalk.blue.underline('testfairy-connect') + '\n';
+					message += '   Consumer Name: ' + chalk.blue.underline('TestFairy Connect') + '\n';
+					message += '   Public Key: \n' + chalk.blue(keypair.public_key) + '\n';
 					message += '\n';
 					message += '8. Make sure that application link is successfully created.\n';
 					message += '9. Type "yes" here when done.';
@@ -277,7 +277,7 @@
 							'testfairy-connect',
 							keypair.private_key,
 							"1.0",
-							"https://app.testfairy.com/connect/oauth/done/",
+							arguments.testfairyServerEndpoint + "/oauth/done/",
 							"RSA-SHA1",
 							null,
 							{
