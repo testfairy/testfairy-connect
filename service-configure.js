@@ -243,11 +243,11 @@
 					keypair = generateKeyPair();
 					message += '1. Open ' + chalk.blue.underline(applicationLinksUrl) + ' in your browser.\n';
 					message += '2. In "URL of Application" field type: ' + chalk.blue.underline(new URL(answers.testfairyServerEndpoint).origin) + '\n';
-					message += '3. Click on ' + chalk.blue("Create new link") + ' button.\n';
-					message += '4. In "Configure Application URL" dialog click "Continue" button.\n';
+					message += '3. Click on ' + chalk.blue('"Create new link"') + ' button.\n';
+					message += '4. In "Configure Application URL" dialog click ' + chalk.blue('"Continue"') + ' button.\n';
 					message += '5. In "Link applications" dialog enter these values:\n';
 					message += '   Application Name: ' + chalk.blue.underline('TestFairy Connect') +'\n';
-					message += '   Application Type: ' + chalk.blue('Generic Application') + '\n';
+					message += '   Application Type: ' + chalk.blue.underline('Generic Application') + '\n';
 					message += '   Service Provider Name: ' + chalk.blue.underline('TestFairy') + '\n';
 					message += '   Consumer key: ' + chalk.blue.underline('testfairy-connect') + '\n';
 					message += '   Shared Secret: ' + chalk.blue.underline('secret') + '\n';
@@ -256,7 +256,7 @@
 					message += '   Authorize URL: ' + chalk.blue.underline('/plugins/servlet/oauth/authorize') + '\n';
 					message += '   Create incoming link: Checked!\n';
 					message += '\n';
-					message += '6. Click ' + chalk.blue("Continue") + 'button.\n';
+					message += '6. Click ' + chalk.blue('"Continue"') + ' button.\n';
 					message += '7. In "Incoming Authentication" dialog enter these values:\n';
 					message += '   Consumer Key: ' + chalk.blue.underline('testfairy-connect') + '\n';
 					message += '   Consumer Name: ' + chalk.blue.underline('TestFairy Connect') + '\n';
