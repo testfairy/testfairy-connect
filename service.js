@@ -16,7 +16,11 @@ var program = require('commander');
 program
 	.version('1.0')
 	.command('configure', 'run configuration wizard')
-	.command('run', 'run TestFairy Connect agent', {isDefault: true});
+	.command('start', 'start TestFairy Connect agent')
+	.command('stop', 'stop TestFairy Connect agent');
 
 program.parse(process.argv);
 
+if (process.argv[2] != "configure") {
+	process.exit();
+}
