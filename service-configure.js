@@ -352,12 +352,10 @@
 		];
 
 		return inquirer.prompt(questions)
-			.then((answers) => console.dir(answers))
 			.then(checkConnection)
 			.then(launchActionPrompt)
 			.catch(function (e) {
-				console.error(chalk.red(e.message));
-				console.error(e.stackTrace || '');
+				console.error(chalk.red("Configuration error"), e);
 			});
 	}
 
