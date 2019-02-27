@@ -38,7 +38,7 @@ var child = new (forever.Monitor)('service-run.js', {
 
 }).on('start', function () {
 	writePid(config.pidFile, process.pid);
-	console.log('service-run.js starter child.pid = ' + process.pid);
+	console.log('TestFairyConnect is running , you can find the log at ' + config.logFile + '\n');
 
 }).on('exit', function () {
 	writePid(config.pidFile, "");

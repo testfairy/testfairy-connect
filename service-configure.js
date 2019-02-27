@@ -20,6 +20,7 @@
 		accessTokenSecret = false,
 		consumer = false,
 		jiraUrl = false,
+		testfairyServerEndpoint = false,
 		keypair = null,
 		authorizationURL = '';
 
@@ -277,7 +278,7 @@
 							'testfairy-connect',
 							keypair.private_key,
 							"1.0",
-							arguments.testfairyServerEndpoint + "/oauth/done/",
+							testfairyServerEndpoint + "/oauth/done/",
 							"RSA-SHA1",
 							null,
 							{
@@ -307,6 +308,7 @@
 				},
 				when: function (answers) {
 					jiraUrl = answers.URL;
+					testfairyServerEndpoint = answers.testfairyServerEndpoint;
 					return answers.jiraAuthType === 'oauth' && !defaults.oauth && !keypair;
 				}
 			},
@@ -314,7 +316,7 @@
 				type: 'input',
 				name: 'oauth_token',
 				message: function (answers) {
-					return 'Please allow TestFairy Connect access to your JIRA on this URL: \n' + authorizationURL + '\n' +
+					return 'Please allow TestFairy Connect access to your JIRA on this URL: \n' + chalk.blue.underline(authorizationURL) + '\n' +
 						'Upon successful integration, copy the provided oauth_verifier, and paste it here: ';
 				},
 				validate: function (input) {
