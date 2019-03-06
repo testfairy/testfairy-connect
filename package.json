@@ -1,7 +1,7 @@
 {
   "name": "testfairy-connect",
   "author": "TestFairy <support@testfairy.com> (https://www.testfairy.com/)",
-  "version": "0.0.3",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "start": "node ./service.js"
