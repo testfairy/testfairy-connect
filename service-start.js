@@ -23,7 +23,7 @@ var child = new (forever.Monitor)('service-run.js', {
 	'silent': true,            // Silences the output from stdout and stderr in the parent process
 	// 'uid': 'your-UID',          // Custom uid for this forever process. (default: autogen)
 	// 'pidFile': config.pidFile, // Path to put pid information for the process(es) started
-	'max': 1,                  // Sets the maximum number of times a given script should run
+	'max': 1000000,             // Sets the maximum number of times a given script should run
 	'killTree': true,           // Kills the entire child process tree on `exit`
 	
 	// These options control how quickly forever restarts a child process
@@ -35,17 +35,19 @@ var child = new (forever.Monitor)('service-run.js', {
 	'logFile': config.logFile, // Path to log output from forever process (when daemonized)
 	'outFile': config.logFile, // Path to log output from child stdout
 	'errFile': config.logFile // Path to log output from child stderr
-
+	
 }).on('start', function () {
-	writePid(config.pidFile, child.childData.pid);
-	console.log('TestFairyConnect is running , you can find the log at ' + config.logFile + '\n');
-
-}).on('exit', function () {
-	writePid(config.pidFile, "");
-	console.log('service-run.js exit = ' + child.childData.pid);
-}).start();
-
-
+        writePid(config.pidFile, child.childData.pid);
+        console.log('TestFairyConnect is running , you can find the log at ' + config.logFile);
+                                
+}).on('restart', function () {          
+        writePid(config.pidFile, child.childData.pid);
+        console.log('TestFairyConnect is running , you can find the log at ' + config.logFile);
+                                        
+}).on('exit', function () {             
+        writePid(config.pidFile, "");   
+        console.log('service-run.js exit = ' + child.childData.pid);
+}).start();                             
 
 function writePid(file, pid) {
 	fs.writeFileSync(file, pid, 'utf8');
