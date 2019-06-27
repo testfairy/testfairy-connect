@@ -2,6 +2,7 @@
 
 (function () {
 	var inquirer = require('inquirer'),
+		URL = require('url').URL,
 		program = require('commander'),
 		fs = require('fs-extra'),
 		execSync = require('child_process').execSync,
@@ -165,9 +166,10 @@
 			{
 				type: 'input',
 				name: 'testfairyServerEndpoint',
-				message: 'Enter your TestFairy server endpoint? (e.g. https://acme.testfairy.com/connect)',
+				message: 'Enter your TestFairy server endpoint? (e.g. acme.testfairy.com)',
 				filter: function (input) {
 					const url = new URL(input);
+					url.protocol = "https";
 					url.pathname = "/connect";
 					return url.href;
 				},
