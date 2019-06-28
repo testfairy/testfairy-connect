@@ -166,7 +166,7 @@
 			{
 				type: 'input',
 				name: 'testfairyServerEndpoint',
-				message: 'Enter your TestFairy server endpoint? (e.g. acme.testfairy.com)',
+				message: 'Enter your TestFairy server endpoint? (e.g. https://acme.testfairy.com)',
 				filter: function (input) {
 					const url = new URL(input);
 					url.protocol = "https";
