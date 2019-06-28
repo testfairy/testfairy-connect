@@ -2,6 +2,7 @@
 
 (function () {
 	var inquirer = require('inquirer'),
+		URL = require('url').URL,
 		program = require('commander'),
 		fs = require('fs-extra'),
 		execSync = require('child_process').execSync,
@@ -20,6 +21,7 @@
 		accessTokenSecret = false,
 		consumer = false,
 		jiraUrl = false,
+		testfairyServerEndpoint = false,
 		keypair = null,
 		authorizationURL = '';
 
@@ -27,6 +29,18 @@
 		.option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
 		.parse(process.argv);
 	configFile = program.file || (userHome + '/.testfairy-connect/config.json');
+
+	console.log('Welcome to TestFairy Connect configuration wizard. (if will be saved into ' + configFile + ')');
+
+	const dirname = require('path').dirname(configFile);
+	if (!fs.pathExistsSync(dirname)) {
+		try {
+			fs.mkdirpSync(dirname);
+		} catch (err) {
+			console.error("Failed to create folder", err);
+			process.exit(1);
+		}
+	}
 
 	if (fs.existsSync(configFile)) {
 		console.log('Using configuration defaults from ' + configFile);
@@ -36,7 +50,6 @@
 			'testfairyServerEndpoint': oldConfig.testfairy.URL,
 			'URL': oldConfig.issueTracker.URL,
 			'jiraAuthType': oldConfig.issueTracker.type === 'jira' ? (oldConfig.issueTracker.oauth ? 'oauth' : 'basic') : null,
-			'issueType': oldConfig.issueTracker.issueType,
 			'workitemType': oldConfig.issueTracker.workitemType,
 			'type': oldConfig.issueTracker.type,
 			'oauth': oldConfig.issueTracker.oauth,
@@ -90,7 +103,6 @@
 	function buildJiraConfig(answers, defaults) {
 		var jiraConfig = {
 			"type": "jira",
-			"issueType": answers.issueType,
 			"strictSSL": false
 		};
 
@@ -145,8 +157,6 @@
 		fs.writeFileSync(configFile, JSON.stringify(config, null, '\t'));
 	}
 
-	console.log('Welcome to TestFairy Connect configuration wizard.');
-
 	function nonEmpty(input) {
 		return input.length > 0;
 	}
@@ -156,9 +166,15 @@
 			{
 				type: 'input',
 				name: 'testfairyServerEndpoint',
-				message: 'Enter your TestFairy server endpoint? (e.g. https://acme.testfairy.com/connect)',
+				message: 'Enter your TestFairy server endpoint? (e.g. acme.testfairy.com)',
+				filter: function (input) {
+					const url = new URL(input);
+					url.protocol = "https";
+					url.pathname = "/connect";
+					return url.href;
+				},
 				validate: nonEmpty,
-				default: defaults.testfairyServerEndpoint,
+				default: defaults.testfairyServerEndpoint
 			},
 			{
 				type: 'input',
@@ -203,15 +219,6 @@
 			},
 			{
 				type: 'input',
-				name: 'issueType',
-				message: 'What is the type of JIRA issues to be created using TestFairy Connect?',
-				default: defaults.issueType || 'Bug',
-				when: function (answers) {
-					return answers.type === 'jira';
-				}
-			},
-			{
-				type: 'input',
 				name: 'username',
 				message: 'JIRA username:',
 				validate: nonEmpty,
@@ -237,26 +244,26 @@
 					var applicationLinksUrl = jiraUrl + '/plugins/servlet/applinks/listApplicationLinks',
 						message = '';
 					keypair = generateKeyPair();
-					message += '1. Open ' + applicationLinksUrl + ' in your browser.\n';
-					message += '2. In "URL of Application" field type: https://app.testfairy.com\n';
-					message += '3. Click on "Create new link" button.\n';
-					message += '4. In "Configure Application URL" dialog click "Continue" button.\n';
+					message += '1. Open ' + chalk.blue.underline(applicationLinksUrl) + ' in your browser.\n';
+					message += '2. In "URL of Application" field type: ' + chalk.blue.underline(new URL(answers.testfairyServerEndpoint).origin) + '\n';
+					message += '3. Click on ' + chalk.blue('"Create new link"') + ' button.\n';
+					message += '4. In "Configure Application URL" dialog click ' + chalk.blue('"Continue"') + ' button.\n';
 					message += '5. In "Link applications" dialog enter these values:\n';
-					message += '   Application Name: TestFairy Connect\n';
-					message += '   Application Type: Generic Application\n';
-					message += '   Service Provider Name: TestFairy\n';
-					message += '   Consumer key: testfairy-connect\n';
-					message += '   Shared Secret: secret\n';
-					message += '   Request Token URL: /plugins/servlet/oauth/request-token\n';
-					message += '   Access Token URL: /plugins/servlet/oauth/access-token\n';
-					message += '   Authorize URL: /plugins/servlet/oauth/authorize\n';
+					message += '   Application Name: ' + chalk.blue.underline('TestFairy Connect') +'\n';
+					message += '   Application Type: ' + chalk.blue.underline('Generic Application') + '\n';
+					message += '   Service Provider Name: ' + chalk.blue.underline('TestFairy') + '\n';
+					message += '   Consumer key: ' + chalk.blue.underline('testfairy-connect') + '\n';
+					message += '   Shared Secret: ' + chalk.blue.underline('secret') + '\n';
+					message += '   Request Token URL: ' + chalk.blue.underline('/plugins/servlet/oauth/request-token') +' \n';
+					message += '   Access Token URL: ' + chalk.blue.underline('/plugins/servlet/oauth/access-token') + '\n';
+					message += '   Authorize URL: ' + chalk.blue.underline('/plugins/servlet/oauth/authorize') + '\n';
 					message += '   Create incoming link: Checked!\n';
 					message += '\n';
-					message += '6. Click "Continue" button.\n';
+					message += '6. Click ' + chalk.blue('"Continue"') + ' button.\n';
 					message += '7. In "Incoming Authentication" dialog enter these values:\n';
-					message += '   Consumer Key: testfairy-connect\n';
-					message += '   Consumer Name: TestFairy Connect\n';
-					message += '   Public Key: \n' + keypair.public_key + '\n';
+					message += '   Consumer Key: ' + chalk.blue.underline('testfairy-connect') + '\n';
+					message += '   Consumer Name: ' + chalk.blue.underline('TestFairy Connect') + '\n';
+					message += '   Public Key: \n' + chalk.blue(keypair.public_key) + '\n';
 					message += '\n';
 					message += '8. Make sure that application link is successfully created.\n';
 					message += '9. Type "yes" here when done.';
@@ -273,7 +280,7 @@
 							'testfairy-connect',
 							keypair.private_key,
 							"1.0",
-							"https://app.testfairy.com/connect/oauth/done/",
+							testfairyServerEndpoint + "/oauth/done/",
 							"RSA-SHA1",
 							null,
 							{
@@ -303,6 +310,7 @@
 				},
 				when: function (answers) {
 					jiraUrl = answers.URL;
+					testfairyServerEndpoint = answers.testfairyServerEndpoint;
 					return answers.jiraAuthType === 'oauth' && !defaults.oauth && !keypair;
 				}
 			},
@@ -310,7 +318,7 @@
 				type: 'input',
 				name: 'oauth_token',
 				message: function (answers) {
-					return 'Please allow TestFairy Connect access to your JIRA on this URL: \n' + authorizationURL + '\n' +
+					return 'Please allow TestFairy Connect access to your JIRA on this URL: \n' + chalk.blue.underline(authorizationURL) + '\n' +
 						'Upon successful integration, copy the provided oauth_verifier, and paste it here: ';
 				},
 				validate: function (input) {
@@ -351,8 +359,7 @@
 			.then(checkConnection)
 			.then(launchActionPrompt)
 			.catch(function (e) {
-				console.error(chalk.red(e.message));
-				console.error(e.stackTrace || '');
+				console.error(chalk.red("Configuration error"), e);
 			});
 	}
 
