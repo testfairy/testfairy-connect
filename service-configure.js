@@ -177,7 +177,7 @@
 				default: defaults.testfairyServerEndpoint
 			},
 			{
-				type: 'input',
+				type: 'password',
 				name: 'testfairyApiKey',
 				message: 'What is your TestFairy API Key?',
 				validate: nonEmpty,
