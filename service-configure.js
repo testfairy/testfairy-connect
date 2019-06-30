@@ -28,6 +28,7 @@
 	program
 		.option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
 		.parse(process.argv);
+
 	configFile = program.file || (userHome + '/.testfairy-connect/config.json');
 
 	console.log('Welcome to TestFairy Connect configuration wizard. (if will be saved into ' + configFile + ')');

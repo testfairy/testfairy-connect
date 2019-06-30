@@ -23,6 +23,7 @@ program
 
 program.parse(process.argv);
 
-if (process.argv[2] != "configure") {
+if (program.args[0] != 'configure') {
 	process.exit();
 }
+
