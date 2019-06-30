@@ -11,6 +11,8 @@ if (pid != "") {
 	return;
 }
 
+// write the parent pid so we can implement `node service.js stop`
+writePid(config.pidFile, process.pid);
 process.on('SIGINT', function () {
 
 	console.info("TFConnect SIGINT !!!!");
@@ -37,17 +39,15 @@ var child = new (forever.Monitor)('service-run.js', {
 	'errFile': config.logFile // Path to log output from child stderr
 	
 }).on('start', function () {
-        writePid(config.pidFile, child.childData.pid);
         console.log('TestFairyConnect is running , you can find the log at ' + config.logFile);
                                 
-}).on('restart', function () {          
-        writePid(config.pidFile, child.childData.pid);
-        console.log('TestFairyConnect is running , you can find the log at ' + config.logFile);
+}).on('restart', function () {
+        console.log('TestFairyConnect was restarted, you can find the log at ' + config.logFile);
                                         
-}).on('exit', function () {             
-        writePid(config.pidFile, "");   
+}).on('exit', function () {
+
         console.log('service-run.js exit = ' + child.childData.pid);
-}).start();                             
+}).start();
 
 function writePid(file, pid) {
 	fs.writeFileSync(file, pid, 'utf8');
