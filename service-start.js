@@ -40,13 +40,6 @@ const child = new (forever.Monitor)('service-run.js', {
 	
 }).on('start', function () {
         console.log('TestFairyConnect is running , you can find the log at ' + config.logFile);
-
-}).on('restart', function () {
-        console.log('TestFairyConnect was restarted, you can find the log at ' + config.logFile);
-                                        
-}).on('exit', function () {
-
-        console.log('service-run.js exit = ' + child.childData.pid);
 }).start();
 
 function writePid(file, pid) {
