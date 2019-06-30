@@ -5,8 +5,8 @@ var config = require('./config.js');
 fs.ensureFileSync(config.logFile);
 fs.ensureFileSync(config.pidFile);
 
-var pid = readPid(config.pidFile);
-if (pid != "") {
+const pid = readPid(config.pidFile);
+if (pid !== "") {
 	console.info("TFConnect already running");
 	return;
 }
@@ -20,7 +20,7 @@ process.on('SIGINT', function () {
 	process.exit();
 });
 // var child = new (forever.Monitor)('foo.js', {
-var child = new (forever.Monitor)('service-run.js', {
+const child = new (forever.Monitor)('service-run.js', {
 	// Basic configuration options
 	'silent': true,            // Silences the output from stdout and stderr in the parent process
 	// 'uid': 'your-UID',          // Custom uid for this forever process. (default: autogen)
@@ -40,7 +40,7 @@ var child = new (forever.Monitor)('service-run.js', {
 	
 }).on('start', function () {
         console.log('TestFairyConnect is running , you can find the log at ' + config.logFile);
-                                
+
 }).on('restart', function () {
         console.log('TestFairyConnect was restarted, you can find the log at ' + config.logFile);
                                         
@@ -54,6 +54,6 @@ function writePid(file, pid) {
 }
 
 function readPid(file) {
-	var pid = fs.readFileSync(file);
+	const pid = fs.readFileSync(file);
 	return pid.toString().replace(/(\n|\r)+$/, '');
 }

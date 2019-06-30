@@ -19,7 +19,7 @@ program
 	.option('-f, --file <path>', 'Set config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
 	.parse(process.argv);
 
-var configFilePath = program.file || (userHome + '/.testfairy-connect/config.json');
+const configFilePath = program.file || (userHome + '/.testfairy-connect/config.json');
 
 if (!fs.existsSync(configFilePath)) {
 	console.error('Config file (' + configFilePath + ') does not exist. Please run "node service.js configure"');
