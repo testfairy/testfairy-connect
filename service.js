@@ -17,13 +17,14 @@ var program = require('commander');
 
 program
 	.version(pjson.version)
-	.command('configure', 'run configuration wizard')
-	.command('start', 'start TestFairy Connect agent')
-	.command('stop', 'stop TestFairy Connect agent');
+	.option('--foreground', 'Run TestFairy Connect in foreground (do not daemonize)')
+	.command('configure', 'Tun configuration wizard')
+	.command('start', 'Start TestFairy Connect agent')
+	.command('stop', 'Stop TestFairy Connect agent');
 
 program.parse(process.argv);
 
-if (program.args[0] != 'configure') {
+if (program.args[0] != 'configure' && !program.foreground) {
 	process.exit();
 }
 
