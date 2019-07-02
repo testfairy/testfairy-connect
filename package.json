@@ -2,7 +2,6 @@
   "name": "testfairy-connect",
   "author": "TestFairy <support@testfairy.com> (https://www.testfairy.com/)",
   "version": "2.0.0",
-  "private": true,
   "scripts": {
     "start": "node ./service.js"
   },
@@ -26,5 +25,8 @@
     "superagent-proxy": "1.0.1",
     "valid-url": "^1.0.9"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "bin": {
+    "testfairy-connect": "./service-start.js"
+  }
 }
