@@ -22,6 +22,14 @@ program
 	.command('start', 'Start TestFairy Connect agent')
 	.command('stop', 'Stop TestFairy Connect agent');
 
+program.on('command:*', function () {
+	if( this._execs[program.args[0]] )
+		return;
+	console.error('Invalid command: %s\n', program.args.join(' '));
+	program.help();
+
+});
+
 program.parse(process.argv);
 
 if (program.args[0] != 'configure' && !program.foreground) {
