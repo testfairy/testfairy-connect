@@ -27,6 +27,6 @@
   },
   "devDependencies": {},
   "bin": {
-    "testfairy-connect": "./service-start.js"
+    "testfairy-connect": "./service.js"
   }
 }

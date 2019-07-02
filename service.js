@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 'use strict';
 const semver = require('semver');
 var pjson = require('./package.json');
