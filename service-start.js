@@ -11,7 +11,7 @@ if (pid !== "") {
 	return;
 }
 
-// write the parent pid so we can implement `node service.js stop`
+// write the parent pid so we can implement `testfairy-connect stop`
 writePid(config.pidFile, process.pid);
 process.on('SIGINT', function () {
 

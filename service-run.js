@@ -22,7 +22,7 @@ program
 const configFilePath = program.file || (userHome + '/.testfairy-connect/config.json');
 
 if (!fs.existsSync(configFilePath)) {
-	console.error('Config file (' + configFilePath + ') does not exist. Please run "node service.js configure"');
+	console.error('Config file (' + configFilePath + ') does not exist. Please run "testfairy-connect configure"');
 	process.exit(1);
 }
 

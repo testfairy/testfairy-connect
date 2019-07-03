@@ -30,6 +30,7 @@ program.on('command:*', function () {
 	program.help();
 
 });
+process.argv[1] = "service.js"; //fix commander to work with global installation and 'testfairy-connect' as an executable
 
 program.parse(process.argv);
 
