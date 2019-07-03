@@ -25,7 +25,9 @@
     "superagent-proxy": "1.0.1",
     "valid-url": "^1.0.9"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/superagent": "^4.1.1"
+  },
   "bin": {
     "testfairy-connect": "./service.js"
   }
