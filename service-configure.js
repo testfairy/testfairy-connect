@@ -382,7 +382,7 @@
 					console.error(chalk.green('Successfully connected to issue tracker.'));
 				} else {
 					console.log("This is what we got from the server:");
-					console.log(result);
+					console.log(chalk.red(result.error.cause));
 					console.error(chalk.red('Could not connect to issue tracker. Please check your settings.'));
 				}
 				resolve(answers);
