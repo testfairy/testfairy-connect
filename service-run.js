@@ -31,13 +31,42 @@ console.info('Using config file: ' + configFilePath);
 var config = extend(defaultConfig, JSON.parse(fs.readFileSync(configFilePath), 'utf8'));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
 
-testfairy.logger = console;
-if (process.platform === 'win32' && process.env.WINDOWS_SERVICE) {
-	var windowsEventLogger = new (require('node-windows').EventLogger)('TestFairy Connect');
-	testfairy.logger = require('./install/windows-service/event-logger.js')(windowsEventLogger);
-} else {
-	require('console-stamp')(console, '[HH:MM:ss.l]');
+
+function initLogger() {
+
+	const { createLogger, format, transports } = require('winston');
+	const { combine, timestamp, align, simple , colorize, printf} = format;
+	require('winston-daily-rotate-file');
+	const config = require('./config.js');
+
+	const transport = new (transports.DailyRotateFile)({
+		filename: config.logFile,
+		// frequency: '1m',
+		datePattern: 'YYYY-MM-DD-HH:mm',
+		// zippedArchive: true,
+		maxSize: '100M', //todo increase me
+		maxFiles: '14d'
+	});
+
+	const logFormat = combine(
+		colorize(),
+		timestamp(),
+		align(),
+		printf(
+			info => `${info.timestamp} ${info.level}: ${info.message}`,
+		));
+
+	return createLogger({
+		transports: [
+			transport,
+			new transports.Console({
+				format: logFormat,
+			}),
+		]
+	});
 }
+
+testfairy.logger = initLogger();
 
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
 issueTracker.setLogger(testfairy.logger);
@@ -61,14 +90,19 @@ function main() {
 }
 
 eventEmitter.on('trackerInitialized', function () {
-	testfairy.logger.log("TestFairy Connect is ready");
+	testfairy.logger.info("TestFairy Connect is ready");
 	main();
 });
 
 eventEmitter.on('trackerError', function (error, fatal) {
 	testfairy.sendError(error[1].cause);
 	testfairy.logger.error(error[1].cause);
+	testfairy.logger.info("===error===");
+	testfairy.logger.error(error);
+	testfairy.logger.error("====fatal====");
+	testfairy.logger.error(fatal);
 
+	testfairy.logger.error("========");
 	if (fatal) {
 		setTimeout(function () {
 			process.exit(2)
