@@ -41,10 +41,10 @@ function initLogger() {
 
 	const transport = new (transports.DailyRotateFile)({
 		filename: config.logFile,
-		// frequency: '1m',
+		frequency: '1H',
 		datePattern: 'YYYY-MM-DD-HH:mm',
 		// zippedArchive: true,
-		maxSize: '100M', //todo increase me
+		maxSize: '100M',
 		maxFiles: '14d'
 	});
 
@@ -97,12 +97,6 @@ eventEmitter.on('trackerInitialized', function () {
 eventEmitter.on('trackerError', function (error, fatal) {
 	testfairy.sendError(error[1].cause);
 	testfairy.logger.error(error[1].cause);
-	testfairy.logger.info("===error===");
-	testfairy.logger.error(error);
-	testfairy.logger.error("====fatal====");
-	testfairy.logger.error(fatal);
-
-	testfairy.logger.error("========");
 	if (fatal) {
 		setTimeout(function () {
 			process.exit(2)
