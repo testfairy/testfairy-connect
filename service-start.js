@@ -11,14 +11,22 @@ if (pid !== "") {
 	return;
 }
 
+let child;
+
+function exit() {
+
+	if (child) {
+		console.info("Stopping the chile process " + child.childData.pid);
+		process.kill(child.childData.pid);
+	}
+	writePid(config.pidFile, "");
+	process.exit(0);
+}
 // write the parent pid so we can implement `testfairy-connect stop`
 writePid(config.pidFile, process.pid);
-process.on('SIGINT', function () {
-
-	console.info("TFConnect SIGINT !!!!");
-	writePid(config.pidFile, "");
-	process.exit();
-});
+// process.on('SIGINT', exit);
+// process.on('SIGHUP', exit);
+process.on('SIGTERM', exit);
 
 
 var program = require('commander');
@@ -31,8 +39,7 @@ program
 
 const configFilePath = program.file || (userHome + '/.testfairy-connect/config.json');
 
-// var child = new (forever.Monitor)('foo.js', {
-const child = new (forever.Monitor)('service-run.js', {
+child = new (forever.Monitor)('service-run.js', {
 	args: ['-f', configFilePath],
 	silent: true,            // Silences the output from stdout and stderr in the parent process
 	max: 1000000,             // Sets the maximum number of times a given script should run
@@ -42,7 +49,7 @@ const child = new (forever.Monitor)('service-run.js', {
 	logFile: config.logFile, // Path to log output from forever process (when daemonized)
 	outFile: config.logFile, // Path to log output from child stdout
 	errFile: config.logFile // Path to log output from child stderr
-	
+
 }).on('start', function () {
         console.log('TestFairyConnect is running , you can find the log at ' + config.logFile);
 }).start();

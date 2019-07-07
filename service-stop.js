@@ -8,7 +8,7 @@ pidToStop = pidToStop.toString().replace(/(\n|\r)+$/, '');
 if (pidToStop != "") {
 	console.log("TFConnect process " + pidToStop + " is stopped");
 	fs.writeFileSync(config.pidFile, "", 'utf8');
-	process.kill(pidToStop, 'SIGKILL');
+	process.kill(pidToStop, 'SIGTERM');
 
 } else {
 	console.log("There is no TFConnect running process");
