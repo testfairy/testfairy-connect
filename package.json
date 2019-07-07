@@ -22,13 +22,13 @@
     "pinkie-promise": "^2.0.1",
     "semver": "^5.6.0",
     "superagent": "^5.1.0",
-    "superagent-proxy": "1.0.1",
+    "superagent-proxy": "^2.0.0",
     "valid-url": "^1.0.9",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^3.9.0"
   },
   "devDependencies": {
-    "@types/superagent": "^4.1.1"
+    "@types/superagent": "^4.1.2"
   },
   "bin": {
     "testfairy-connect": "./service.js"
