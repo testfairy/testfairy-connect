@@ -39,7 +39,7 @@ program
 
 const configFilePath = program.file || (userHome + '/.testfairy-connect/config.json');
 
-child = new (forever.Monitor)('service-run.js', {
+child = new (forever.Monitor)(__dirname + '/service-run.js', {
 	args: ['-f', configFilePath],
 	silent: true,            // Silences the output from stdout and stderr in the parent process
 	max: 1000000,             // Sets the maximum number of times a given script should run
