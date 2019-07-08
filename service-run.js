@@ -41,11 +41,10 @@ function initLogger() {
 
 	const transport = new (transports.DailyRotateFile)({
 		filename: config.logFile,
-		frequency: '1H',
-		datePattern: 'YYYY-MM-DD-HH:mm',
+		datePattern: 'YYYY-MM-DD',
 		// zippedArchive: true,
 		maxSize: '100M',
-		maxFiles: '14d'
+		maxFiles: '10d'
 	});
 
 	const logFormat = combine(
