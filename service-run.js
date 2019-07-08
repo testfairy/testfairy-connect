@@ -26,46 +26,11 @@ if (!fs.existsSync(configFilePath)) {
 	process.exit(1);
 }
 
-console.info('Using config file: ' + configFilePath);
-
 var config = extend(defaultConfig, JSON.parse(fs.readFileSync(configFilePath), 'utf8'));
 var testfairy = require('./lib/testfairy-service')(config.testfairy);
 
-
-function initLogger() {
-
-	const { createLogger, format, transports } = require('winston');
-	const { combine, timestamp, align, simple , colorize, printf} = format;
-	require('winston-daily-rotate-file');
-	const config = require('./config.js');
-
-	const transport = new (transports.DailyRotateFile)({
-		filename: config.logFile,
-		datePattern: 'YYYY-MM-DD',
-		// zippedArchive: true,
-		maxSize: '100M',
-		maxFiles: '10d'
-	});
-
-	const logFormat = combine(
-		colorize(),
-		timestamp(),
-		align(),
-		printf(
-			info => `${info.timestamp} ${info.level}: ${info.message}`,
-		));
-
-	return createLogger({
-		transports: [
-			transport,
-			new transports.Console({
-				format: logFormat,
-			}),
-		]
-	});
-}
-
 testfairy.logger = initLogger();
+testfairy.logger.info('Using config file: ' + configFilePath);
 
 var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
 issueTracker.setLogger(testfairy.logger);
@@ -95,7 +60,7 @@ eventEmitter.on('trackerInitialized', function () {
 
 eventEmitter.on('trackerError', function (error, fatal) {
 	testfairy.sendError(error[1].cause);
-	testfairy.logger.error(error[1].cause);
+	testfairy.logger.error(error[0] +' , ' + error[1].cause);
 	if (fatal) {
 		setTimeout(function () {
 			process.exit(2)
@@ -103,6 +68,39 @@ eventEmitter.on('trackerError', function (error, fatal) {
 	}
 
 });
+
+function initLogger() {
+
+	const { createLogger, format, transports } = require('winston');
+	const { combine, timestamp, align, simple , colorize, printf} = format;
+	require('winston-daily-rotate-file');
+	const config = require('./config.js');
+
+	const logFormat = combine(
+		colorize(),
+		timestamp(),
+		align(),
+		printf(
+			info => `${info.timestamp} ${info.level}: ${info.message}`,
+		));
+
+	const dailyRotateTransport = new (transports.DailyRotateFile)({
+		filename: config.logFile,
+		datePattern: 'YYYY-MM-DD',
+		maxSize: '100M',
+		maxFiles: '10d',
+		format: logFormat,
+	});
+
+	return createLogger({
+		transports: [
+			dailyRotateTransport,
+			// new transports.Console({
+			// 	format: logFormat,
+			// }),
+		]
+	});
+}
 
 issueTracker.initialize();
 
