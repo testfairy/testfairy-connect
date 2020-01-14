@@ -360,27 +360,31 @@
 		];
 
 		return inquirer.prompt(questions)
+			.then(checkConnectionTestFairy)
 			.then(checkConnectionIssueTracker)
-			.then(checkConecctionTestFairy)
 			.then(launchActionPrompt)
 			.catch(function (e) {
 				console.error(chalk.red("Configuration error"), e);
 			});
 	}
 
-	function checkConecctionTestFairy(answers) {
+	function checkConnectionTestFairy(answers) {
 		return new Promise(function (resolve, reject) {
 			var config = answersToConfig(answers, defaults);
 
-			console.log(chalk.green("Attempting a connection to " + config.testfairyServerEndpoint));
+			console.log(chalk.green("Attempting a connection to " + config.testfairy.URL));
 
-			var testfairyService = require('./lib/testfairy-service')(config);
+			var testfairyService = require('./lib/testfairy-service')(config.testfairy);
 
-			testfairyService.getActions(function (result) {
-				if (Array.isArray(result) && result.length > 0) {
+			testfairyService.getActions(function (result, error) {
+				if (Array.isArray(result) && error === undefined) {
+					console.error(chalk.green('Successfully connected to TestFairy Connect.'));
+
 					resolve(answers);
 				} else {
+					console.error(error);
 					console.error(chalk.red('Could not connect to TestFairy endpoint. Please check your settings.'));
+					reject(error);
 				}
 			});
 		});
