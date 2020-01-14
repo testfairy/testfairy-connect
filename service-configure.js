@@ -11,7 +11,6 @@
 		Promise = require('pinkie-promise'),
 		validUrl = require('valid-url'),
 		chalk = require('chalk'),
-		request = require('superagent'),
 		defaults = {},
 		oldConfig = null,
 		userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH,
@@ -25,8 +24,6 @@
 		testfairyServerEndpoint = false,
 		keypair = null,
 		authorizationURL = '';
-
-	require('superagent-proxy')(request); // extend with Request#proxy()
 
 	program
 		.option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
