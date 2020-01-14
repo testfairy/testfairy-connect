@@ -11,6 +11,7 @@
 		Promise = require('pinkie-promise'),
 		validUrl = require('valid-url'),
 		chalk = require('chalk'),
+		request = require('superagent'),
 		defaults = {},
 		oldConfig = null,
 		userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH,
@@ -24,6 +25,8 @@
 		testfairyServerEndpoint = false,
 		keypair = null,
 		authorizationURL = '';
+
+	require('superagent-proxy')(request); // extend with Request#proxy()
 
 	program
 		.option('-f, --file <path>', 'Set output config file path. Defaults to ' + userHome + '/.testfairy-connect/config.json')
@@ -357,14 +360,33 @@
 		];
 
 		return inquirer.prompt(questions)
-			.then(checkConnection)
+			.then(checkConnectionIssueTracker)
+			.then(checkConecctionTestFairy)
 			.then(launchActionPrompt)
 			.catch(function (e) {
 				console.error(chalk.red("Configuration error"), e);
 			});
 	}
 
-	function checkConnection(answers) {
+	function checkConecctionTestFairy(answers) {
+		return new Promise(function (resolve, reject) {
+			var config = answersToConfig(answers, defaults);
+
+			console.log(chalk.green("Attempting a connection to " + config.testfairyServerEndpoint));
+
+			var testfairyService = require('./lib/testfairy-service')(config);
+
+			testfairyService.getActions(function (result) {
+				if (Array.isArray(result) && result.length > 0) {
+					resolve(answers);
+				} else {
+					console.error(chalk.red('Could not connect to TestFairy endpoint. Please check your settings.'));
+				}
+			});
+		});
+	}
+
+	function checkConnectionIssueTracker(answers) {
 		return new Promise(function (resolve, reject) {
 
 			//connect to issue tracker and
