@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-  - '6.1'
+  - 7
 
 script:
   - # do nothing
@@ -14,7 +14,7 @@ deploy:
   provider: releases
   api_key:
     secure: khbr5xKvRyjtgh0dnYWCeWKUY4O/dz7SSYmE5bMa66J/GmNJN1R2564mIyoYosJsoUwASmVWyxjscOGYj75MP2mFGGqFZPNaYOdPEQ4qDrJTtLxj67fTrA313O6dFmeRwNBom38S+eXyFOseLP/lpemv9eQAGaqvItBxYLeEahFwwCC3IfrC4p6AHpP4fcWOvi+SoN88Uf1FOK9XMyTSQyCp14Ef+xxaLLpAYYv0DIOzSKWu6x/1xpbXIU5V6WyTCjepFtsh3Ygajmiv8s9LD+4N+oRKrmFgiK0Cxph/v62BEQcEe+uQfZGJJRErm+ijF7KnC3FfqJFqH103JfbLllhid+O9Dc72uao/EaPmp21E+8lTWJRMCAeprpoAfzv8Ld/f5SQgim373hmZPVVFLfACdA+1s/e6ZToZUzSQ9436Y/u2NImdpL6ed9PPo9WCAy/7bSDbYlRxqiqQ/o3ifnHfYIl3nkzgsW2SYNBphh/qEdU2GZVG2ia67x4tI/r3EJSFPF5lID2kUHNaKhDh17ky5RvHom2EbDW8h1avQnueT9wWNRT2QVWI0IajTv9ft5R08ydakU0tvn5LSVzyqjP3tR64vSNp6sVyrd4nal3q69VEUdLLplkYU5pxvirbhUUiLYnN3ramDrCObv19XEgs8XuSxe1SxfkHsmc0MUo=
-  file: 
+  file:
     - testfairy-connect.tgz
     - testfairy-connect.zip
   on:
@@ -23,4 +23,3 @@ deploy:
 
 notifications:
   email: false
-  
