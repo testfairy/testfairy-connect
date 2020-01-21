@@ -37,4 +37,3 @@ program.parse(process.argv);
 if (program.args[0] != 'configure' && !program.foreground) {
 	process.exit();
 }
-
