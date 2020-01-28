@@ -5,6 +5,7 @@ var extend = require('extend');
 var EventEmitter = require('events').EventEmitter;
 var eventEmitter = new EventEmitter();
 var program = require('commander');
+var initLogger = require('./logger')
 
 var defaultConfig = {
 	'testfairy': {
@@ -27,13 +28,12 @@ if (!fs.existsSync(configFilePath)) {
 }
 
 var config = extend(defaultConfig, JSON.parse(fs.readFileSync(configFilePath), 'utf8'));
-var testfairy = require('./lib/testfairy-service')(config.testfairy);
+var logger = initLogger();
+var testfairy = require('./lib/testfairy-service')(config.testfairy, logger);
 
-testfairy.logger = initLogger();
 testfairy.logger.info('Using config file: ' + configFilePath);
 
-var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
-issueTracker.setLogger(testfairy.logger);
+var issueTracker = require('./lib/issue-tracker')(config.issueTracker, logger);
 issueTracker.setEventEmitter(eventEmitter);
 
 function main() {
@@ -68,38 +68,5 @@ eventEmitter.on('trackerError', function (error, fatal) {
 	}
 
 });
-
-function initLogger() {
-
-	const { createLogger, format, transports } = require('winston');
-	const { combine, timestamp, align, simple , colorize, printf} = format;
-	require('winston-daily-rotate-file');
-	const config = require('./config.js');
-
-	const logFormat = combine(
-		colorize(),
-		timestamp(),
-		align(),
-		printf(
-			info => `${info.timestamp} ${info.level}: ${info.message}`,
-		));
-
-	const dailyRotateTransport = new (transports.DailyRotateFile)({
-		filename: config.logFile,
-		datePattern: 'YYYY-MM-DD',
-		maxSize: '100M',
-		maxFiles: '10d',
-		format: logFormat,
-	});
-
-	return createLogger({
-		transports: [
-			dailyRotateTransport,
-			// new transports.Console({
-			// 	format: logFormat,
-			// }),
-		]
-	});
-}
 
 issueTracker.initialize();

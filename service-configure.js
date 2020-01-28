@@ -371,7 +371,7 @@
 
 			console.log(chalk.green("Attempting a connection to " + config.testfairy.URL));
 
-			var testfairyService = require('./lib/testfairy-service')(config.testfairy);
+			var testfairyService = require('./lib/testfairy-service')(config.testfairy, require('./logger')());
 
 			testfairyService.getActions(function (result, error) {
 				if (Array.isArray(result) && error === undefined) {
@@ -379,9 +379,9 @@
 
 					resolve(answers);
 				} else {
-					console.error(error);
+					// console.error(error);
 					console.error(chalk.red('Could not connect to TestFairy endpoint. Please check your settings.'));
-					reject(error);
+					resolve(answers);
 				}
 			});
 		});
@@ -394,7 +394,7 @@
 			var config = answersToConfig(answers, defaults);
 			console.log(chalk.green("Attempting a connection to " + config.issueTracker.URL));
 
-			var issueTracker = require('./lib/issue-tracker')(config.issueTracker);
+			var issueTracker = require('./lib/issue-tracker')(config.issueTracker, require('./logger')());
 
 			var eventEmitter = new EventEmitter();
 			issueTracker.setEventEmitter(eventEmitter);
