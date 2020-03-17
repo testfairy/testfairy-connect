@@ -247,92 +247,6 @@
 					return answers.jiraAuthType === 'basic';
 				}
 			},
-			/*
-			{
-
-				validate: function (input) {
-					console.log("!!! " + input);
-					const answer = ('' + input).trim().toLowerCase();
-					if (answer !== 'yes') {
-						return false;
-					}
-
-					return new Promise(function (resolve, reject) {
-						console.log("\nPlease wait, trying to connect with OAuth...");
-						const customHeaders = {
-							"Accept": "application/json",
-							"Connection": "close",
-							"User-Agent": "Node authentication",
-							"Content-Type": "application/json",
-						};
-
-						consumer = new OAuth(
-							jiraUrl + "/plugins/servlet/oauth/request-token",
-							jiraUrl + "/plugins/servlet/oauth/access-token",
-							'testfairy-connect',
-							keypair.private_key,
-							"1.0",
-							testfairyServerEndpoint + "/oauth/done/",
-							"RSA-SHA1",
-							null,
-							customHeaders,
-						);
-
-						consumer.getOAuthRequestToken(
-							function (error, oauthToken, oauthTokenSecret, results) {
-								if (error) {
-									console.error('\n');
-									console.error(error + error.stack);
-									console.error('\n');
-									resolve(false);
-								} else {
-									requestToken = oauthToken;
-									requestTokenSecret = oauthTokenSecret;
-									authorizationURL = jiraUrl + '/plugins/servlet/oauth/authorize?oauth_token=' + requestToken;
-									console.info(authorizationURL);
-									resolve(true);
-								}
-							}
-						);
-					});
-				},
-				when: function (answers) {
-					jiraUrl = answers.URL;
-					testfairyServerEndpoint = answers.testfairyServerEndpoint;
-					return answers.jiraAuthType === 'oauth' && !defaults.oauth;
-				}
-			},
-			{
-				type: 'input',
-				name: 'oauth_token',
-				message: function (answers) {
-					return 'Please allow TestFairy Connect access to your JIRA on this URL: \n' + chalk.blue.underline(authorizationURL) + '\n' +
-						'Upon successful integration, copy the provided oauth_verifier, and paste it here: ';
-				},
-				validate: function (input) {
-					return new Promise(function (resolve, reject) {
-						consumer.getOAuthAccessToken(
-							requestToken,
-							requestTokenSecret,
-							input.trim(),
-							function (error, oauthAccessToken, oauthAccessTokenSecret, results) {
-								if (error) {
-									console.error('Error happened');
-									resolve(false);
-								} else {
-									accessToken = oauthAccessToken;
-									accessTokenSecret = oauthAccessTokenSecret;
-									resolve(true);
-								}
-							}
-						);
-					});
-				},
-				when: function (answers) {
-					return answers.jiraAuthType === 'oauth' && !defaults.oauth && !accessToken;
-				}
-			},
-			*/
 			{
 				type: 'input',
 				name: 'proxy',
@@ -402,7 +316,7 @@
 	}
 
 	function getHelpForOauthConfiguration(answers) {
-		const applicationLinksUrl = jiraUrl + '/plugins/servlet/applinks/listApplicationLinks';
+		const applicationLinksUrl = answers.URL + '/plugins/servlet/applinks/listApplicationLinks';
 
 		const message = [];
 		message.push('');
@@ -437,8 +351,6 @@
 
 			console.log("\nPlease wait, trying to connect with OAuth...");
 
-			const jiraUrl = answers.URL;
-
 			const customHeaders = {
 				"Accept": "application/json",
 				"Connection": "close",
@@ -447,30 +359,50 @@
 			};
 
 			const consumer = new OAuth(
-				jiraUrl + "/plugins/servlet/oauth/request-token",
-				jiraUrl + "/plugins/servlet/oauth/access-token",
+				answers.URL + "/plugins/servlet/oauth/request-token",
+				answers.URL + "/plugins/servlet/oauth/access-token",
 				'testfairy-connect',
 				keypair.private_key,
 				"1.0",
-				testfairyServerEndpoint + "/oauth/done/",
+				answers.testfairyServerEndpoint + "/oauth/done/",
 				"RSA-SHA1",
 				null,
 				customHeaders,
 			);
 
+			consumer._createClient = function (port, host, method, path, headers, sslEnabled) {
+				const options = {
+					host,
+					port,
+					path,
+					method,
+					headers,
+				};
+
+				if (sslEnabled) {
+					const model = require('https');
+					options.ca = answers.ca;
+					return model.request(options);
+				} else {
+					const model = require('http');
+					return model.request(options);
+				}
+			};
+
 			consumer.getOAuthRequestToken(
 				function (error, oauthToken, oauthTokenSecret, results) {
 					if (error) {
-						console.error('\n');
-						console.error(error + error.stack);
-						console.error('\n');
-						resolve(answers);
+						console.error(error);
+						reject(error);
 					} else {
-						requestToken = oauthToken;
-						requestTokenSecret = oauthTokenSecret;
-						authorizationURL = jiraUrl + '/plugins/servlet/oauth/authorize?oauth_token=' + requestToken;
-						console.info(authorizationURL);
-						resolve(answers);
+						const authorizationURL = answers.URL + '/plugins/servlet/oauth/authorize?oauth_token=' + oauthToken;
+
+						resolve({
+							oauthToken,
+							oauthTokenSecret,
+							authorizationURL,
+							consumer,
+						});
 					}
 				}
 			);
@@ -478,7 +410,7 @@
 	}
 
 	function handleOauthConfiguration(answers) {
-		return new Promise(function (resolve, reject) {
+		return new Promise(async function (resolve, reject) {
 			if (answers.type === 'jira' && answers.jiraAuthType === 'oauth') {
 
 				if (keypair == null) {
@@ -495,7 +427,39 @@
 					}
 				];
 
-				inquirer.prompt(questions).then(resolve);
+				await inquirer.prompt(questions);
+
+				const oauthOptions = await getOauthAuthorizationUrl(answers);
+				console.dir(oauthOptions);
+
+				console.log("Please open the following URL, to allow TestFairy Connect access:");
+				console.log(chalk.green.underline(oauthOptions.authorizationURL));
+
+				console.log("");
+
+				const questions2 = [
+					{
+						type: "input",
+						name: "oauth_verifier",
+						message: 'When ready, please copy the value of oauth_verifier:',
+						validate: nonEmpty,
+					}
+				];
+
+				const tokens = await inquirer.prompt(questions2);
+				console.dir(tokens);
+
+				oauthOptions.consumer.getOAuthAccessToken(oauthOptions.oauthToken, oauthOptions.oauthTokenSecret, tokens.oauth_verifier, function (error, oauthAccessToken, oauthAccessTokenSecret, results) {
+					if (error) {
+						reject(error);
+					} else {
+						accessToken = oauthAccessToken;
+						accessTokenSecret = oauthAccessTokenSecret;
+						console.log("accessToken " + accessToken + " secret " + accessTokenSecret);
+						resolve(answers);
+					}
+				});
+
 			} else {
 				// not jira, or not jira+basic
 				resolve(answers);
