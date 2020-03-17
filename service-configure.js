@@ -430,7 +430,6 @@
 				await inquirer.prompt(questions);
 
 				const oauthOptions = await getOauthAuthorizationUrl(answers);
-				console.dir(oauthOptions);
 
 				console.log("Please open the following URL, to allow TestFairy Connect access:");
 				console.log(chalk.green.underline(oauthOptions.authorizationURL));
@@ -447,7 +446,6 @@
 				];
 
 				const tokens = await inquirer.prompt(questions2);
-				console.dir(tokens);
 
 				oauthOptions.consumer.getOAuthAccessToken(oauthOptions.oauthToken, oauthOptions.oauthTokenSecret, tokens.oauth_verifier, function (error, oauthAccessToken, oauthAccessTokenSecret, results) {
 					if (error) {
@@ -455,7 +453,6 @@
 					} else {
 						accessToken = oauthAccessToken;
 						accessTokenSecret = oauthAccessTokenSecret;
-						console.log("accessToken " + accessToken + " secret " + accessTokenSecret);
 						resolve(answers);
 					}
 				});
