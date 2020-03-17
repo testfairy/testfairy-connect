@@ -17,7 +17,7 @@
     "fs-extra": "^7.0.1",
     "inquirer": "7.1.0",
     "jira-client": "^6.8.0",
-    "oauth": "^0.9.14",
+    "oauth": "0.9.15",
     "pinkie-promise": "^2.0.1",
     "semver": "^5.6.0",
     "superagent": "^5.1.0",
