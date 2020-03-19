@@ -29,7 +29,13 @@ if (!fs.existsSync(configFilePath)) {
 
 const config = extend(defaultConfig, JSON.parse(fs.readFileSync(configFilePath), 'utf8'));
 const logger = initLogger();
-const testfairy = require('./lib/testfairy-service')(config.testfairy, logger);
+const testfairy = require('./lib/testfairy-service')(config, logger);
+
+// also support ca when contacting testfairy endpoint, in case there's a firewall
+// or a proxy server that is man-in-the-middle, but is using the same certificate as issue tracker
+if (config.issueTracker.ca) {
+	require("./lib/crypto-extra-ca")(process, config.issueTracker.ca);
+}
 
 testfairy.logger.info('Using config file: ' + configFilePath);
 

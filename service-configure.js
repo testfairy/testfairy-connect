@@ -309,6 +309,7 @@
 			const bunch = await inquirer.prompt(questions);
 			if (bunch.isSelfSigned === "Yes") {
 				answers.ca = bunch.ca;
+				require("./lib/crypto-extra-ca")(process, bunch.ca);
 			}
 
 			resolve(answers);
@@ -369,25 +370,6 @@
 				null,
 				customHeaders,
 			);
-
-			consumer._createClient = function (port, host, method, path, headers, sslEnabled) {
-				const options = {
-					host,
-					port,
-					path,
-					method,
-					headers,
-				};
-
-				if (sslEnabled) {
-					const model = require('https');
-					options.ca = answers.ca;
-					return model.request(options);
-				} else {
-					const model = require('http');
-					return model.request(options);
-				}
-			};
 
 			consumer.getOAuthRequestToken(
 				function (error, oauthToken, oauthTokenSecret, results) {
@@ -470,7 +452,7 @@
 
 			console.info("Attempting a connection to " + config.testfairy.URL);
 
-			const testfairyService = require('./lib/testfairy-service')(config.testfairy, require('./logger')());
+			const testfairyService = require('./lib/testfairy-service')(config, require('./logger')());
 			testfairyService.getActions(function (result, error) {
 				if (Array.isArray(result) && error === undefined) {
 					console.info(chalk.green('Successfully connected to TestFairy Connect.'));
