@@ -54,7 +54,8 @@
 			'workitemType': oldConfig.issueTracker.workitemType,
 			'type': oldConfig.issueTracker.type,
 			'oauth': oldConfig.issueTracker.oauth,
-			'proxy': oldConfig.testfairy.proxy
+			'proxy': oldConfig.testfairy.proxy,
+			'strictSSL': oldConfig.issueTracker.strictSSL === true,
 		};
 
 		if (oldConfig.issueTracker.username) {
@@ -104,7 +105,7 @@
 	function buildJiraConfig(answers, defaults) {
 		const jiraConfig = {
 			"type": "jira",
-			"strictSSL": true,
+			"strictSSL": (answers.strictSSL === "Yes"),
 			"ca": null,
 		};
 
@@ -248,6 +249,15 @@
 				}
 			},
 			{
+				type: 'rawlist',
+				name: 'strictSSL',
+				default: function() {
+					return defaults.strictSSL ? 0 : 1;
+				},
+				message: 'Require strict SSL connections?',
+				choices: ['Yes', 'No'],
+			},
+			{
 				type: 'input',
 				name: 'proxy',
 				default: defaults.proxy,
@@ -261,6 +271,10 @@
 		const answers = await inquirer.prompt(questions);
 		await handleSelfSignedCerts(answers);
 		await handleOauthConfiguration(answers);
+
+		// before we check connection to testfairy, make sure we update NODE_TLS_REJECT_UNAUTHORIZED
+		process.env.NODE_TLS_REJECT_UNAUTHORIZED = (answers.strictSSL === "Yes") ? "1" : "0";
+
 		await checkConnectionTestFairy(answers);
 		await checkConnectionIssueTracker(answers);
 		await launchActionPrompt(answers);

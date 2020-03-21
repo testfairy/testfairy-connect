@@ -13,7 +13,6 @@ let defaultConfig = {
 	}
 };
 
-let killed = false;
 const userHome = process.env.HOME || process.env.HOMEDRIVE + process.env.HOMEPATH;
 
 program
@@ -37,6 +36,11 @@ if (config.issueTracker.ca) {
 	require("./lib/crypto-extra-ca")(process, config.issueTracker.ca);
 }
 
+if (config.issueTracker.strictSSL === false) {
+	// allow insecure ssl connections to testfairy (in case of mitm proxy over https)
+	process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 testfairy.logger.info('Using config file: ' + configFilePath);
 
 const issueTracker = require('./lib/issue-tracker')(config.issueTracker, logger);
@@ -53,9 +57,7 @@ function main() {
 			nextTimeout = 0;
 		});
 
-		if (!killed) {
-			setTimeout(main, nextTimeout);
-		}
+		setTimeout(main, nextTimeout);
 	});
 }
 
